@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    database: POSTGRESQL
+    hibernate.ddl-auto: create-drop
+    show-sql: true
+
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/my_blog
+    username: postgres
+    password: zaq12wsx

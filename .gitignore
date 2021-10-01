@@ -1,2 +1,5 @@
 .idea
 build
+target/
+src/main/resources/static/
+src/main/resources/templates/git
