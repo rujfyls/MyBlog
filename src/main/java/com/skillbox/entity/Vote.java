@@ -21,7 +21,7 @@ public class Vote {
     private Post post;
 
     @Column(name = "time", nullable = false)
-    private LocalDateTime time;
+    private LocalDateTime time = LocalDateTime.now();
 
     @Column(name = "value", columnDefinition = "smallint", nullable = false)
     private Short value;

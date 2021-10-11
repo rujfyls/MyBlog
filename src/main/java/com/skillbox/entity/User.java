@@ -18,7 +18,7 @@ public class User {
     private Short isModerator;
 
     @Column(name = "reg_time", nullable = false)
-    private LocalDateTime regTime;
+    private LocalDateTime regTime = LocalDateTime.now();
 
     @Column(name = "name", nullable = false)
     private String name;

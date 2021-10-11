@@ -27,7 +27,7 @@ public class Comment {
     private User user;
 
     @Column(name = "time", nullable = false)
-    private LocalDateTime time;
+    private LocalDateTime time = LocalDateTime.now();
 
     @Column(name = "text", columnDefinition = "TEXT", nullable = false)
     private String text;

@@ -13,7 +13,7 @@ public class Captcha {
     private Integer captchaId;
 
     @Column(name = "time", nullable = false)
-    private LocalDateTime time;
+    private LocalDateTime time = LocalDateTime.now();
 
     @Column(name = "code", columnDefinition = "smallint", nullable = false)
     private Short code;

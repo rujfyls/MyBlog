@@ -31,7 +31,7 @@ public class Post {
     private User user;
 
     @Column(name = "time", nullable = false)
-    private LocalDateTime time;
+    private LocalDateTime time = LocalDateTime.now();
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -165,5 +165,20 @@ public class Post {
 
     public void removeComment(Comment comment) {
         comments.remove(comment);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "postId=" + postId +
+                ", isActive=" + isActive +
+                ", moderationStatus=" + moderationStatus +
+                ", moderatorId=" + moderatorId +
+                ", user=" + user +
+                ", time=" + time +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", viewCount=" + viewCount +
+                '}';
     }
 }
