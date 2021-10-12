@@ -26,7 +26,7 @@ public class TagService {
         double maxWeight = Collections.max(listOfTagsWithWeight.values());
 
         listOfTagsWithWeight.forEach((name, weight) ->
-                listOfTagsWithWeight.replace(name, weight, Math.rint((weight * maxWeight) * 100) / 100));
+                listOfTagsWithWeight.replace(name, weight, Math.rint((weight * (1 / maxWeight)) * 100) / 100));
 
         return listOfTagsWithWeight;
     }
