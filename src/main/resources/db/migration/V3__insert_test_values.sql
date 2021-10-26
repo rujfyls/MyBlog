@@ -5,4 +5,4 @@ insert into posts(is_active, moderation_status, text, time, title, view_count, u
 insert into tag2post(tag_id, post_id) values(1,1);
 insert into post_votes(time, value, post_id, user_id) values(CURRENT_TIMESTAMP, 1, 1,1);
 insert into post_comments(text, time, post_id, user_id) values('ставлю тестовый лайк', CURRENT_TIMESTAMP, 1,1);
-insert into captcha_codes(code, secret_code, time) values(123, 321, CURRENT_TIMESTAMP);
+insert into captcha_codes(code, secret_code, time) values('test code', 'test secret code', CURRENT_TIMESTAMP);

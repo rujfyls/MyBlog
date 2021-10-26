@@ -1,7 +1,7 @@
 package com.skillbox.controller;
 
-import com.skillbox.controller.dto.InitResponseDTO;
-import com.skillbox.controller.dto.SettingResponseDTO;
+import com.skillbox.controller.dto.response.InitResponseDTO;
+import com.skillbox.controller.dto.response.SettingResponseDTO;
 import com.skillbox.service.SettingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

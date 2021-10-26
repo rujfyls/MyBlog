@@ -3,6 +3,7 @@ spring:
     database: POSTGRESQL
     hibernate.ddl-auto: none
     show-sql: true
+    hibernate.jdbc.time_zone: UTC
 
   datasource:
     platform: postgres
@@ -15,7 +16,9 @@ spring:
 blog:
   title: DevPub
   subtitle: Рассказы разработчиков
-  phone: +7 903 666-44-55
-  email: mail@mail.ru
-  copyright: Дмитрий Сергеев
+  phone: +7 952 456-92-48
+  email: dexteraljp1@gmail.com
+  copyright: Александр Федунцов
   copyrightFrom: 2005
+
+  captchaDeletionIntervalInHours: 1

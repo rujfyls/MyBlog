@@ -1,4 +1,4 @@
-create table captcha_codes (id  serial not null, code smallint not null, secret_code smallint not null, time timestamp not null, primary key (id));
+create table captcha_codes (id  serial not null, code varchar(255) not null, secret_code varchar(255) not null, time timestamp not null, primary key (id));
 create table global_settings (id  serial not null, code varchar(255) not null, name varchar(255) not null, value varchar(255) not null, primary key (id));
 create table tags (id  serial not null, name varchar(255) not null, primary key (id));
 create table users (id  serial not null, code varchar(255), email varchar(255) not null, is_moderator smallint not null, name varchar(255) not null, password varchar(255) not null, photo TEXT, reg_time timestamp not null, primary key (id));

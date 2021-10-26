@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    @Query(nativeQuery = true, value = "select count(*) from posts where moderation_status='NEW'")
+    @Query("select count(p) from Post p where moderationStatus = 'NEW'")
     Integer getModerationCount();
+
+    @Query("SELECT u FROM User u WHERE email = :email")
+    User getUserByEmail(String email);
 }

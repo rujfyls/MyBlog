@@ -1,10 +1,13 @@
 package com.skillbox.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "captcha_codes")
+@Data
 public class Captcha {
 
     @Id
@@ -15,44 +18,9 @@ public class Captcha {
     @Column(name = "time", nullable = false)
     private LocalDateTime time = LocalDateTime.now();
 
-    @Column(name = "code", columnDefinition = "smallint", nullable = false)
-    private Short code;
+    @Column(name = "code", nullable = false)
+    private String code;
 
-    @Column(name = "secret_code", columnDefinition = "smallint", nullable = false)
-    private Short secretCode;
-
-    public Captcha() {
-    }
-
-    public Integer getCaptchaId() {
-        return captchaId;
-    }
-
-    public void setCaptchaId(Integer captchaId) {
-        this.captchaId = captchaId;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public Short getCode() {
-        return code;
-    }
-
-    public void setCode(Short code) {
-        this.code = code;
-    }
-
-    public Short getSecretCode() {
-        return secretCode;
-    }
-
-    public void setSecretCode(Short secretCode) {
-        this.secretCode = secretCode;
-    }
+    @Column(name = "secret_code", nullable = false)
+    private String secretCode;
 }

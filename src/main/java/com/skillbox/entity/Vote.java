@@ -1,10 +1,13 @@
 package com.skillbox.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "post_votes")
+@Data
 public class Vote {
 
     @Id
@@ -25,47 +28,4 @@ public class Vote {
 
     @Column(name = "value", columnDefinition = "smallint", nullable = false)
     private Short value;
-
-    public Vote() {
-    }
-
-    public Integer getPostVotesId() {
-        return postVotesId;
-    }
-
-    public void setPostVotesId(Integer postVotesId) {
-        this.postVotesId = postVotesId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public Short getValue() {
-        return value;
-    }
-
-    public void setValue(Short value) {
-        this.value = value;
-    }
 }
