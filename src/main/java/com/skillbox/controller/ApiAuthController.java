@@ -32,8 +32,8 @@ public class ApiAuthController {
     public AuthorCheckResponseDTO authorCheck() {
         AuthorCheckResponseDTO author = new AuthorCheckResponseDTO();
         //тут необходима реализация проверки авторизованности пользователя, а пока для теста json:
-        author.setResult(true);
-        author.setUser(new UserDTO(userService.getUserById(1), userService.getModerationCount()));
+        author.setResult(false);
+//        author.setUser(new UserDTO(userService.getUserById(1), userService.getModerationCount()));
         return author;
     }
 
@@ -41,7 +41,7 @@ public class ApiAuthController {
     public CaptchaResponseDTO captcha() throws IOException {
         GCage gCage = new GCage();
         YCage yCage = new YCage();
-        String code = gCage.getTokenGenerator().next();
+        String code = gCage.getTokenGenerator().next().substring(0, 5);
         String secretCode = yCage.getTokenGenerator().next();
         String image = Base64.getEncoder().encodeToString(gCage.draw(code));
 
