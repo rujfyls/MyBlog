@@ -4,15 +4,21 @@ import com.skillbox.entity.User;
 import com.skillbox.exceptions.UserNotFoundException;
 import com.skillbox.pojo.EnteredUser;
 import com.skillbox.repository.UserRepository;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     public Integer getModerationCount() {
@@ -35,6 +41,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
     public EnteredUser checkingEnteredData(String name,
                                            String email,
                                            String password,
@@ -46,6 +56,18 @@ public class UserService {
         inputError.setCaptcha(captcha);
 
         return inputError;
+    }
+
+    public User getAuthenticatedUser(String email, String password) {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password));
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        org.springframework.security.core.userdetails.User user =
+                (org.springframework.security.core.userdetails.User) auth.getPrincipal();
+
+        return userRepository.getUserByEmail(user.getUsername());
     }
 
     private String checkingName(String name) {

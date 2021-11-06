@@ -5,10 +5,13 @@ import com.skillbox.controller.dto.response.PostResponseDTO;
 import com.skillbox.controller.dto.response.PostsResponseDTO;
 import com.skillbox.controller.dto.response.TagResponseDTO;
 import com.skillbox.entity.Post;
+import com.skillbox.entity.User;
 import com.skillbox.service.PostService;
 import com.skillbox.service.TagService;
+import com.skillbox.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,11 +21,12 @@ public class ApiPostController {
 
     private final PostService postService;
     private final TagService tagService;
+    private final UserService userService;
 
-    public ApiPostController(PostService postService, TagService tagService) {
+    public ApiPostController(PostService postService, TagService tagService, UserService userService) {
         this.postService = postService;
-
         this.tagService = tagService;
+        this.userService = userService;
     }
 
     @GetMapping("/post")
@@ -80,5 +84,17 @@ public class ApiPostController {
     @GetMapping("/post/{postId}")
     public PostResponseDTO getPostById(@PathVariable Integer postId) {
         return new PostResponseDTO(postService.getPostById(postId));
+    }
+
+    @GetMapping("/post/my")
+    public PostsResponseDTO getMyPosts(Principal principal,
+                                       @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+                                       @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+                                       @RequestParam(value = "status", required = false) String status) {
+        User currentUser = userService.getUserByEmail(principal.getName());
+
+        List<Post> findPosts = postService.findMyPosts(offset / limit, limit, status, currentUser.getUserId());
+        Integer countPosts = postService.getCountMyPosts(status, currentUser.getUserId());
+        return new PostsResponseDTO(countPosts, findPosts);
     }
 }

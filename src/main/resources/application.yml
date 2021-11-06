@@ -2,7 +2,7 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: none
-    show-sql: true
+    show-sql: false
     hibernate.jdbc.time_zone: UTC
 
   datasource:

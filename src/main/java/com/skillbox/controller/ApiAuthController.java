@@ -2,17 +2,18 @@ package com.skillbox.controller;
 
 import com.github.cage.GCage;
 import com.github.cage.YCage;
+import com.skillbox.controller.dto.request.LoginRequestDTO;
 import com.skillbox.controller.dto.request.UserRequestDTO;
-import com.skillbox.controller.dto.response.AuthorCheckResponseDTO;
-import com.skillbox.controller.dto.response.CaptchaResponseDTO;
-import com.skillbox.controller.dto.response.RegisterResponseDTO;
-import com.skillbox.controller.dto.response.UserDTO;
+import com.skillbox.controller.dto.response.*;
+import com.skillbox.entity.User;
 import com.skillbox.pojo.EnteredUser;
 import com.skillbox.service.CaptchaService;
 import com.skillbox.service.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Base64;
 
 @RestController
@@ -29,11 +30,15 @@ public class ApiAuthController {
     }
 
     @GetMapping("/check")
-    public AuthorCheckResponseDTO authorCheck() {
+    public AuthorCheckResponseDTO authorCheck(Principal principal) {
         AuthorCheckResponseDTO author = new AuthorCheckResponseDTO();
-        //тут необходима реализация проверки авторизованности пользователя, а пока для теста json:
-        author.setResult(false);
-//        author.setUser(new UserDTO(userService.getUserById(1), userService.getModerationCount()));
+        if (principal == null) {
+            author.setResult(false);
+            return author;
+        }
+        author.setResult(true);
+        author.setUser(new UserDTO(userService.getUserByEmail(principal.getName()), userService.getModerationCount()));
+
         return author;
     }
 
@@ -63,5 +68,28 @@ public class ApiAuthController {
                     userRequestDTO.getCaptchaSecret());
         }
         return new RegisterResponseDTO(enteredUser);
+    }
+
+    @PostMapping("/login")
+    public AuthorCheckResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
+
+        AuthorCheckResponseDTO author = new AuthorCheckResponseDTO();
+
+        if (userService.getUserByEmail(loginRequestDTO.getEmail()) == null) {
+            author.setResult(false);
+            return author;
+        }
+
+        User user = userService.getAuthenticatedUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        author.setResult(true);
+        author.setUser(new UserDTO(user, userService.getModerationCount()));
+
+        return author;
+    }
+
+    @GetMapping("/logout")
+    public LogoutResponseDTO logout() {
+        SecurityContextHolder.clearContext();
+        return new LogoutResponseDTO();
     }
 }

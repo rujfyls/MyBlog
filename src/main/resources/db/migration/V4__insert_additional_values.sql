@@ -1,8 +1,8 @@
 insert into tags(name) values('spring');
 
-insert into users(email, is_moderator, name, password, reg_time) values('dexter_aljp1994@gmail.com', 0, 'Ivan', 'password', CURRENT_TIMESTAMP);
-insert into users(email, is_moderator, name, password, reg_time) values('katrinka@gmail.com', 0, 'Kate', 'password', CURRENT_TIMESTAMP);
-insert into users(email, is_moderator, name, password, reg_time) values('andrewMail@gmail.com', 0, 'Andrew', 'password', CURRENT_TIMESTAMP);
+insert into users(email, is_moderator, name, password, reg_time) values('dexter_aljp1994@gmail.com', 0, 'Ivan', '$2a$12$p8c88WRUSCLVhpUKdWefEu4FzVUFN5tCr/TaP08Y7iMevtfyppFmu', CURRENT_TIMESTAMP);
+insert into users(email, is_moderator, name, password, reg_time) values('katrinka@gmail.com', 0, 'Kate', '$2a$12$p8c88WRUSCLVhpUKdWefEu4FzVUFN5tCr/TaP08Y7iMevtfyppFmu', CURRENT_TIMESTAMP);
+insert into users(email, is_moderator, name, password, reg_time) values('andrewMail@gmail.com', 0, 'Andrew', '$2a$12$p8c88WRUSCLVhpUKdWefEu4FzVUFN5tCr/TaP08Y7iMevtfyppFmu', CURRENT_TIMESTAMP);
 
 insert into posts(is_active, moderation_status, text, time, title, view_count, user_id) values(1, 'ACCEPTED', 'The Spring Boot CLI (Command Line Interface) is a command-line tool that you can use to run and test Spring Boot Applications from a Terminal. The CLI is one of the fastest ways to develop a Spring-based application. How does Spring Boot CLI work? It uses Spring Boot Starter and Spring Boot AutoConfigurate components to', CURRENT_TIMESTAMP, 'Spring Boot CLI', 1, 1);
 insert into posts(is_active, moderation_status, text, time, title, view_count, user_id) values(1, 'ACCEPTED', 'Spring Boot Actuator is a sub-project of the Spring Boot Framework. It uses HTTP endpoints to expose operational information about any running application. The main benefit of using this library is that we get health and monitoring metrics from production-ready applications. Moreover, the gathering of metrics, understanding traffic, or knowing the state of the database,', CURRENT_TIMESTAMP, 'Actuator in Spring Boot', 2, 2);

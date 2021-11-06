@@ -1,7 +1,6 @@
 package com.skillbox.entity;
 
-import com.skillbox.controller.dto.request.UserRequestDTO;
-import com.skillbox.pojo.EnteredUser;
+import com.skillbox.entity.enums.Role;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -79,5 +78,9 @@ public class User {
 
     public void removeComment(Comment comment) {
         comments.remove(comment);
+    }
+
+    public Role getRole() {
+        return isModerator == 1 ? Role.MODERATOR : Role.USER;
     }
 }

@@ -2,6 +2,7 @@ package com.skillbox.service;
 
 import com.skillbox.entity.Post;
 import com.skillbox.entity.Vote;
+import com.skillbox.entity.enums.ModerationStatus;
 import com.skillbox.exceptions.PostNotFoundException;
 import com.skillbox.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
@@ -104,6 +105,40 @@ public class PostService {
         post.setViewCount(post.getViewCount() + 1);
         postRepository.save(post);
         return post;
+    }
+
+    public List<Post> findMyPosts(Integer offset, Integer limit, String status, Integer userId) {
+        ModerationStatus moderationStatus = getModerationStatus(status);
+        short isActive = getActiveFromStatus(status);
+
+        return postRepository.findMyPosts(moderationStatus,
+                isActive, userId, PageRequest.of(offset, limit)).toList();
+    }
+
+    public Integer getCountMyPosts(String status, Integer userId) {
+        ModerationStatus moderationStatus = getModerationStatus(status);
+        short isActive = getActiveFromStatus(status);
+
+        return postRepository.countMyPosts(moderationStatus, isActive, userId);
+    }
+
+    private Short getActiveFromStatus(String status) {
+        if (status.equals("inactive")) {
+            return 0;
+        }
+        return 1;
+    }
+
+    private ModerationStatus getModerationStatus(String status) {
+        if (status.equals("inactive")) {
+            return ModerationStatus.NEW;
+        } else if (status.equals("pending")) {
+            return ModerationStatus.NEW;
+        } else if (status.equals("declined")) {
+            return ModerationStatus.DECLINED;
+        } else {
+            return ModerationStatus.ACCEPTED;
+        }
     }
 
     private boolean checkForMatch(String what, String where) {
