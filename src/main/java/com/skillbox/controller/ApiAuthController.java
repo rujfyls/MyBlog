@@ -2,14 +2,22 @@ package com.skillbox.controller;
 
 import com.github.cage.GCage;
 import com.github.cage.YCage;
+import com.skillbox.controller.dto.request.EditPasswordRequestDTO;
 import com.skillbox.controller.dto.request.LoginRequestDTO;
+import com.skillbox.controller.dto.request.RestorePasswordRequestDTO;
 import com.skillbox.controller.dto.request.UserRequestDTO;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.User;
+import com.skillbox.pojo.EnteredDataForEditPassword;
 import com.skillbox.pojo.EnteredUser;
 import com.skillbox.service.CaptchaService;
+import com.skillbox.service.EmailService;
+import com.skillbox.service.PostService;
 import com.skillbox.service.UserService;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -20,26 +28,36 @@ import java.util.Base64;
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     private final UserService userService;
     private final CaptchaService captchaService;
+    private final EmailService emailService;
+    private final PostService postService;
 
     public ApiAuthController(UserService userService,
-                             CaptchaService captchaService) {
+                             CaptchaService captchaService,
+                             EmailService emailService,
+                             PostService postService) {
         this.userService = userService;
         this.captchaService = captchaService;
+        this.emailService = emailService;
+        this.postService = postService;
     }
 
     @GetMapping("/check")
-    public AuthorCheckResponseDTO authorCheck(Principal principal) {
-        AuthorCheckResponseDTO author = new AuthorCheckResponseDTO();
+    public UserCheckResponseDTO authorCheck(Principal principal) {
+        UserCheckResponseDTO user = new UserCheckResponseDTO();
         if (principal == null) {
-            author.setResult(false);
-            return author;
+            user.setResult(false);
+            return user;
         }
-        author.setResult(true);
-        author.setUser(new UserDTO(userService.getUserByEmail(principal.getName()), userService.getModerationCount()));
+        user.setResult(true);
+        user.setUser(new UserDTO(userService.getUserByEmail(principal.getName()),
+                postService.getCountPostsForModeration("new",
+                        userService.getUserByEmail(principal.getName()).getUserId())));
 
-        return author;
+        return user;
     }
 
     @GetMapping("/captcha")
@@ -64,16 +82,15 @@ public class ApiAuthController {
         if (enteredUser.checkingForErrors()) {
             userService.save(userRequestDTO.getName(),
                     userRequestDTO.getEmail(),
-                    userRequestDTO.getPassword(),
+                    encoder.encode(userRequestDTO.getPassword()),
                     userRequestDTO.getCaptchaSecret());
         }
         return new RegisterResponseDTO(enteredUser);
     }
 
     @PostMapping("/login")
-    public AuthorCheckResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
-
-        AuthorCheckResponseDTO author = new AuthorCheckResponseDTO();
+    public UserCheckResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        UserCheckResponseDTO author = new UserCheckResponseDTO();
 
         if (userService.getUserByEmail(loginRequestDTO.getEmail()) == null) {
             author.setResult(false);
@@ -82,14 +99,53 @@ public class ApiAuthController {
 
         User user = userService.getAuthenticatedUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         author.setResult(true);
-        author.setUser(new UserDTO(user, userService.getModerationCount()));
+        author.setUser(new UserDTO(user, postService.getCountPostsForModeration("new", user.getUserId())));
 
         return author;
     }
 
     @GetMapping("/logout")
+    @PreAuthorize("hasAuthority('user:write')")
     public LogoutResponseDTO logout() {
         SecurityContextHolder.clearContext();
         return new LogoutResponseDTO();
+    }
+
+    @PostMapping("/restore")
+    public ResultResponseDTO restorePassword(@RequestBody RestorePasswordRequestDTO restorePassword) {
+        User user = userService.getUserByEmail(restorePassword.getEmail());
+
+        if (user != null) {
+            String hash = DigestUtils.sha256Hex(user.getEmail());
+            user.setCode(hash);
+            userService.save(user);
+
+            userService.addNewHashInStorage(hash);
+
+            emailService.sendMail(user.getEmail(),
+                    "Восстановление пароля",
+                    "ссылка для восстановления пароля: \n /login/change-password/" + hash);
+            return new ResultResponseDTO(true);
+        }
+        return new ResultResponseDTO(false);
+    }
+
+    @PostMapping("/password")
+    public EditPasswordResponseDTO editPassword(@RequestBody EditPasswordRequestDTO editPasswordRequestDTO) {
+
+        User user = userService.getUserByCode(editPasswordRequestDTO.getCode());
+        EnteredDataForEditPassword enteredData = userService.checkingEnteredDataForEditPassword(
+                user,
+                editPasswordRequestDTO.getCode(),
+                editPasswordRequestDTO.getPassword(),
+                captchaService.checkingCaptcha(editPasswordRequestDTO.getCaptcha(), editPasswordRequestDTO.getCaptchaSecret())
+        );
+
+        if (enteredData.checkingForErrors()) {
+            user.setPassword(encoder.encode(editPasswordRequestDTO.getPassword()));
+            userService.save(user);
+        }
+
+        return new EditPasswordResponseDTO(enteredData);
     }
 }

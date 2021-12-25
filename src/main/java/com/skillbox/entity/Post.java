@@ -1,16 +1,21 @@
 package com.skillbox.entity;
 
 import com.skillbox.entity.enums.ModerationStatus;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "posts")
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class Post {
 
     @Id
@@ -45,6 +50,7 @@ public class Post {
     private Integer viewCount;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private final List<Vote> listOfVotes = new ArrayList<>();
 
     @ManyToMany
@@ -53,9 +59,11 @@ public class Post {
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
+    @ToString.Exclude
     private final List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private final List<Comment> comments = new ArrayList<>();
 
     public List<Vote> getListOfVotes() {
@@ -74,11 +82,11 @@ public class Post {
         return tags;
     }
 
-    private void addTag(Tag tag) {
+    public void addTag(Tag tag) {
         tags.add(tag);
     }
 
-    private void removeTag(Tag tag) {
+    public void removeTag(Tag tag) {
         tags.remove(tag);
     }
 
@@ -92,5 +100,18 @@ public class Post {
 
     public void removeComment(Comment comment) {
         comments.remove(comment);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Post post = (Post) o;
+        return postId != null && Objects.equals(postId, post.postId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

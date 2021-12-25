@@ -18,4 +18,20 @@ public class SettingService {
     public List<Setting> findAll() {
         return settingRepository.findAll();
     }
+
+    public Setting getSettingsByStatistics() {
+        return settingRepository.findSettingsByStatistics();
+    }
+
+    public Setting getSettingsByPostPremoderation() {
+        return settingRepository.findSettingsByPostPremoderation();
+    }
+
+    public Setting getSettingsByMultiuserMode() {
+        return settingRepository.findSettingsByMultiuserMode();
+    }
+
+    public void save(Setting setting) {
+        settingRepository.save(setting);
+    }
 }

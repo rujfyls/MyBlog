@@ -1,10 +1,12 @@
 package com.skillbox.entity;
 
 import lombok.Data;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tags")
@@ -37,5 +39,18 @@ public class Tag {
 
     public void removePost(Post post) {
         posts.remove(post);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Tag tag = (Tag) o;
+        return tagId != null && Objects.equals(tagId, tag.tagId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

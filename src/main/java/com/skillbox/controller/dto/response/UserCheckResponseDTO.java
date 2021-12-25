@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
-public class AuthorCheckResponseDTO {
+public class UserCheckResponseDTO {
 
     private Boolean result;
 

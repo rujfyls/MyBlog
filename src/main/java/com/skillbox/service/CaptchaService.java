@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CaptchaService {
 
     @Value("${blog.captchaDeletionIntervalInHours}")
-    private String interval;
+    private String captchaDeletionInterval;
 
     private final CaptchaRepository captchaRepository;
 
@@ -33,7 +33,7 @@ public class CaptchaService {
         Captcha findCaptcha = captchaRepository.findCaptchaBySecretCode(captchaSecret);
 
         if (findCaptcha == null) {
-            return "Истек срок действия капчи";
+            return "Истек срок действия каптчи";
         }
         if (!findCaptcha.getCode().equals(captcha)) {
             return "Код с картинки введён неверно";
@@ -43,7 +43,7 @@ public class CaptchaService {
     }
 
     private void deleteOldData() {
-        LocalDateTime time = LocalDateTime.now().minusHours(Long.parseLong(interval));
+        LocalDateTime time = LocalDateTime.now().minusHours(Long.parseLong(captchaDeletionInterval));
 
         captchaRepository.findAll().stream().filter(captcha -> captcha.getTime().compareTo(time) < 0)
                 .forEach(captchaRepository::delete);

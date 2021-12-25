@@ -2,9 +2,11 @@ package com.skillbox.controller.dto.response;
 
 import com.skillbox.entity.Comment;
 import com.skillbox.entity.User;
+import lombok.Data;
 
 import java.time.ZoneOffset;
 
+@Data
 public class CommentDTO {
 
      private Integer id;

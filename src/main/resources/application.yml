@@ -8,9 +8,24 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/my_blog
+    url: jdbc:postgresql://localhost:5432/my_blog?currentSchema=my_blog
     username: postgres
     password: zaq12wsx
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: skillbox.feduncov@gmail.com
+    password: zaq12WSX
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  thymeleaf:
+    cache: false
 
 #  default values for initialization:
 blog:
@@ -22,3 +37,4 @@ blog:
   copyrightFrom: 2005
 
   captchaDeletionIntervalInHours: 1
+  hashForRestorePasswordDeletionIntervalInHours: 1

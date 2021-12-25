@@ -1,11 +1,10 @@
 package com.skillbox.service;
 
+import com.skillbox.entity.Tag;
 import com.skillbox.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TagService {
@@ -29,5 +28,24 @@ public class TagService {
                 listOfTagsWithWeight.replace(name, weight, Math.rint((weight * (1 / maxWeight)) * 100) / 100));
 
         return listOfTagsWithWeight;
+    }
+
+    public List<Tag> getTagsOrSave(List<String> tagNames) {
+        List<Tag> tags = new ArrayList<>();
+
+        tagNames.stream().map(String::toUpperCase).forEach(name -> {
+            Tag findTag = tagRepository.findByName(name);
+            if (findTag == null) {
+                Tag tag = new Tag();
+                tag.setName(name);
+                tagRepository.save(tag);
+
+                tags.add(tag);
+            } else {
+                tags.add(findTag);
+            }
+        });
+
+        return tags;
     }
 }

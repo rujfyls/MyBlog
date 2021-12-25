@@ -15,36 +15,110 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
 
     @Query("SELECT count(p) FROM Post p WHERE p.isActive = 1 " +
             "and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp")
-    Integer countAllActivePosts();
+    Integer getCountAllActivePosts();
 
     @Query("SELECT p FROM Post p WHERE p.isActive = 1  " +
             "and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp")
     Page<Post> findAll(Pageable pageable);
 
+    @Query("SELECT p FROM Post p LEFT JOIN p.comments AS comment WHERE p.isActive = 1  " +
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp " +
+            "GROUP BY p ORDER BY COUNT(comment) DESC")
+    Page<Post> findAllPostsSortedByCommentCount(Pageable pageable);
+
+    @Query("SELECT p FROM Post p LEFT JOIN p.listOfVotes AS vote WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp " +
+            "GROUP BY p ORDER BY COUNT(CASE WHEN vote.value>0 THEN 1 END) DESC")
+    Page<Post> findPostsSortedByLikeCount(Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1 and p.moderationStatus = :moderationStatus")
+    Page<Post> findAllPostsForModeration(ModerationStatus moderationStatus, Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1 AND p.moderationStatus = :moderationStatus " +
+            "AND p.moderatorId = :userId")
+    Page<Post> findMyPostsForModeration(ModerationStatus moderationStatus, Integer userId, Pageable pageable);
+
     @Query("SELECT p FROM Post p WHERE p.isActive = 1  " +
-            "and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp")
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     List<Post> findAll();
 
-    @Query("SELECT count(p) FROM Post p")
-    Integer countAllPosts();
+    @Query("SELECT COUNT(p) FROM Post p")
+    Integer getCountAllPosts();
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.isActive = 1 AND p.moderationStatus = :moderationStatus")
+    Integer getCountAllPostForModeration(ModerationStatus moderationStatus);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.isActive = 1 AND p.moderationStatus = :moderationStatus " +
+            "AND p.moderatorId = :userId")
+    Integer getCountMyPostsForModeration(ModerationStatus moderationStatus, Integer userId);
 
     @Query("SELECT p FROM Post p WHERE DATE(time) = :date AND p.isActive = 1  " +
-            "and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp")
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     Page<Post> findPostsByDate(LocalDate date, Pageable pageable);
 
+    @Query("SELECT COUNT(p) FROM Post p WHERE DATE(time) = :date AND p.isActive = 1  " +
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
+    Integer getPostsCountByDate(LocalDate date);
+
     @Query("SELECT p FROM Post p JOIN p.tags t WHERE t.name = :tag AND p.isActive = 1  " +
-            "and p.moderationStatus = 'ACCEPTED' and p.time <= current_timestamp")
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     Page<Post> findPostByTag(String tag, Pageable pageable);
 
+    @Query("SELECT COUNT(p) FROM Post p JOIN p.tags t WHERE t.name = :tag AND p.isActive = 1  " +
+            "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
+    Integer getPostsCountByTag(String tag);
+
     @Query("SELECT p FROM Post p WHERE p.isActive = 1  and p.moderationStatus = 'ACCEPTED' " +
-            "and p.time <= current_timestamp and id = :postId")
+            "AND p.time <= current_timestamp AND postId = :postId")
     Optional<Post> findById(Integer postId);
+
+    @Query("SELECT p FROM Post p JOIN p.user u WHERE p.isActive = 0 AND p.moderationStatus = 'NEW' " +
+            "AND u.userId = :userId AND p.postId = :postId")
+    Post findInactivePostByIdAndUserId(Integer postId, Integer userId);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1 " +
+            "AND p.moderatorId = :userId AND p.postId = :postId")
+    Post findPostRejectedForModerator(Integer postId, Integer userId);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1 AND p.moderationStatus = 'NEW' AND p.postId = :postId")
+    Post findPostForModeration(Integer postId);
+
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1  AND postId = :postId")
+    Optional<Post> findByIdForModerator(Integer postId);
 
     @Query("SELECT p FROM Post p JOIN p.user u WHERE p.isActive = :isActive AND p.moderationStatus = :moderationStatus " +
             "AND u.userId = :userId")
     Page<Post> findMyPosts(ModerationStatus moderationStatus, Short isActive, Integer userId, Pageable pageable);
 
-    @Query("SELECT count(p) FROM Post p JOIN p.user u WHERE p.isActive = :isActive AND p.moderationStatus = :moderationStatus " +
+    @Query("SELECT COUNT(p) FROM Post p JOIN p.user u WHERE p.isActive = :isActive AND p.moderationStatus = :moderationStatus " +
             "AND u.userId = :userId")
-    Integer countMyPosts(ModerationStatus moderationStatus, Short isActive, Integer userId);
+    Integer getCountMyPosts(ModerationStatus moderationStatus, Short isActive, Integer userId);
+
+    @Query("SELECT COUNT(p) FROM Post p JOIN p.user u WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND u.userId = :userId")
+    Integer getPostsCountByUserId(Integer userId);
+
+    @Query("SELECT COUNT(v) FROM Vote v JOIN v.user u JOIN v.post p WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND v.value > 0 " +
+            "AND u.userId = :userId")
+    Integer getLikesCountByUserId(Integer userId);
+
+    @Query("SELECT COUNT(v) FROM Vote v JOIN v.user u JOIN v.post p WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND v.value < 0 " +
+            "AND u.userId = :userId")
+    Integer getDislikesCountByUserId(Integer userId);
+
+    @Query("SELECT SUM(p.viewCount) FROM Post p JOIN p.user u WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND u.userId = :userId")
+    Integer getViewsCountByUserId(Integer userId);
+
+    @Query("SELECT p FROM Post p JOIN p.user u WHERE p.isActive = 1 " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND u.userId = :userId " +
+            "ORDER BY p.time ASC")
+    Page<Post> findFirstPublicationByUserId(Integer userId, Pageable pageable);
 }

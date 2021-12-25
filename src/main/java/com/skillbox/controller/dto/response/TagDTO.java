@@ -10,5 +10,5 @@ public class TagDTO {
     private String name;
 
     @NonNull
-    private double weight;
+    private Double weight;
 }

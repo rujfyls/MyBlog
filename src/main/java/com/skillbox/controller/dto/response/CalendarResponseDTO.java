@@ -1,17 +1,16 @@
 package com.skillbox.controller.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.util.Map;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 public class CalendarResponseDTO {
 
-    @NonNull
     private Set<Integer> years;
 
-    @NonNull
     private Map<String, Integer> posts;
 }
