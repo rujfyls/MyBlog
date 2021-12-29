@@ -4,7 +4,7 @@ import com.skillbox.entity.Post;
 import com.skillbox.entity.User;
 import com.skillbox.entity.enums.ModerationStatus;
 import com.skillbox.exceptions.PostNotFoundException;
-import com.skillbox.pojo.EnteredPost;
+import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import com.skillbox.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -14,8 +14,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class PostService {
@@ -66,13 +64,11 @@ public class PostService {
     }
 
     public List<Post> searchPosts(Integer offset, Integer limit, String query) {
-        List<Post> posts = new ArrayList<>();
-        postRepository.findAll(PageRequest.of(offset, limit)).forEach(post -> {
-            if (checkForMatch(query, post.getTitle())) {
-                posts.add(post);
-            }
-        });
-        return posts;
+        return postRepository.findPostsWithSearchQuery(query, PageRequest.of(offset, limit)).toList();
+    }
+
+    public Integer getPostsCountWithSearchQuery(String query) {
+        return postRepository.getPostsCountWithSearchQuery(query);
     }
 
     public Set<Integer> getListOfYearsWithPosts() {
@@ -183,8 +179,8 @@ public class PostService {
         return postRepository.getCountMyPosts(moderationStatus, isActive, userId);
     }
 
-    public EnteredPost checkingEnteredPost(String title, String text) {
-        EnteredPost enteredPost = new EnteredPost();
+    public EnteredPostRequestDTO checkingEnteredPost(String title, String text) {
+        EnteredPostRequestDTO enteredPost = new EnteredPostRequestDTO();
         if (title.trim().isEmpty() || title.length() < 3) {
             enteredPost.setTitle("Заголовок не установлен");
         } else {
@@ -217,12 +213,13 @@ public class PostService {
     }
 
     public Integer getViewsCountByUserId(Integer userId) {
-        return postRepository.getViewsCountByUserId(userId);
+        Integer count = postRepository.getViewsCountByUserId(userId);
+        return Objects.requireNonNullElse(count, 0);
     }
 
     public Long getFirstPublicationByUserId(Integer userId) {
-        return postRepository.findFirstPublicationByUserId(userId,
-                PageRequest.of(0, 1)).getContent().get(0).getTime().toEpochSecond(ZoneOffset.UTC);
+        Post post = postRepository.findFirstPublicationByUserId(userId).stream().findFirst().orElse(new Post());
+        return post.getTime().toEpochSecond(ZoneOffset.UTC);
     }
 
     private Short getActiveFromStatus(String status) {
@@ -240,11 +237,5 @@ public class PostService {
         } else {
             return ModerationStatus.ACCEPTED;
         }
-    }
-
-    private boolean checkForMatch(String what, String where) {
-        Pattern p = Pattern.compile(what.toLowerCase());
-        Matcher m = p.matcher(where.toLowerCase());
-        return m.find();
     }
 }

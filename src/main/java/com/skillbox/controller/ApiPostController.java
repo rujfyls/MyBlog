@@ -9,9 +9,8 @@ import com.skillbox.entity.Comment;
 import com.skillbox.entity.Post;
 import com.skillbox.entity.Tag;
 import com.skillbox.entity.User;
-import com.skillbox.pojo.EnteredPost;
+import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import com.skillbox.service.*;
-import org.jsoup.Jsoup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +63,8 @@ public class ApiPostController {
                                         @RequestParam(value = "query", required = false) String query) {
         if (query != null && !query.trim().isEmpty()) {
             List<Post> listOfFoundPosts = postService.searchPosts(offset / limit, limit, query);
-            return new PostsResponseDTO(listOfFoundPosts.size(), listOfFoundPosts);
+            Integer postCount = postService.getPostsCountWithSearchQuery(query);
+            return new PostsResponseDTO(postCount, listOfFoundPosts);
         } else {
             return posts(offset / limit, limit, "recent");
         }
@@ -148,11 +148,11 @@ public class ApiPostController {
     @PreAuthorize("hasAuthority('user:write')")
     public AddingAndEditingPostResponseDTO addPost(@RequestBody PostRequestDTO postRequestDTO, Principal principal) {
 
-        String text = Jsoup.parse(postRequestDTO.getText()).text();
+        String text = postRequestDTO.getText();
         String title = postRequestDTO.getTitle();
 
         User currentUser = userService.getUserByEmail(principal.getName());
-        EnteredPost enteredPost = postService.checkingEnteredPost(title, text);
+        EnteredPostRequestDTO enteredPost = postService.checkingEnteredPost(title, text);
 
         if (enteredPost.checkingForErrors()) {
             Post post = new Post();
@@ -186,11 +186,11 @@ public class ApiPostController {
 
         Post post = getPostById(postId, userService.getUserByEmail(principal.getName()));
 
-        String text = Jsoup.parse(postRequestDTO.getText()).text();
+        String text = postRequestDTO.getText();
         String title = postRequestDTO.getTitle();
         List<Tag> receivedTags = tagService.getTagsOrSave(postRequestDTO.getTags());
 
-        EnteredPost enteredPost = postService.checkingEnteredPost(title, text);
+        EnteredPostRequestDTO enteredPost = postService.checkingEnteredPost(title, text);
 
         if (enteredPost.checkingForErrors()) {
             post.setText(text);
@@ -210,7 +210,7 @@ public class ApiPostController {
     public ResponseEntity<CommentResponseDTO> comment(@RequestBody CommentRequestDTO commentRequestDTO, Principal principal) {
         Integer postId = commentRequestDTO.getPostId();
         Integer parentCommentId = commentRequestDTO.getParentId();
-        String text = Jsoup.parse(commentRequestDTO.getText()).text().trim();
+        String text = commentRequestDTO.getText();
 
         User currentUser = userService.getUserByEmail(principal.getName());
         Post post = getPostById(postId, currentUser);

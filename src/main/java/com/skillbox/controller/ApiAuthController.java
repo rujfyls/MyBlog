@@ -8,8 +8,8 @@ import com.skillbox.controller.dto.request.RestorePasswordRequestDTO;
 import com.skillbox.controller.dto.request.UserRequestDTO;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.User;
-import com.skillbox.pojo.EnteredDataForEditPassword;
-import com.skillbox.pojo.EnteredUser;
+import com.skillbox.controller.dto.request.EnteredDataForEditPasswordRequestDTO;
+import com.skillbox.controller.dto.request.EnteredUserRequestDTO;
 import com.skillbox.service.CaptchaService;
 import com.skillbox.service.EmailService;
 import com.skillbox.service.PostService;
@@ -75,7 +75,7 @@ public class ApiAuthController {
 
     @PostMapping("/register")
     public RegisterResponseDTO register(@RequestBody UserRequestDTO userRequestDTO) {
-        EnteredUser enteredUser = userService.checkingEnteredData(userRequestDTO.getName(), userRequestDTO.getEmail(),
+        EnteredUserRequestDTO enteredUser = userService.checkingEnteredData(userRequestDTO.getName(), userRequestDTO.getEmail(),
                 userRequestDTO.getPassword(),
                 captchaService.checkingCaptcha(userRequestDTO.getCaptcha(), userRequestDTO.getCaptchaSecret()));
 
@@ -134,7 +134,7 @@ public class ApiAuthController {
     public EditPasswordResponseDTO editPassword(@RequestBody EditPasswordRequestDTO editPasswordRequestDTO) {
 
         User user = userService.getUserByCode(editPasswordRequestDTO.getCode());
-        EnteredDataForEditPassword enteredData = userService.checkingEnteredDataForEditPassword(
+        EnteredDataForEditPasswordRequestDTO enteredData = userService.checkingEnteredDataForEditPassword(
                 user,
                 editPasswordRequestDTO.getCode(),
                 editPasswordRequestDTO.getPassword(),

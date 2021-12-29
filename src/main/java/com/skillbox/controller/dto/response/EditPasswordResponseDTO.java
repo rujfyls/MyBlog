@@ -1,7 +1,7 @@
 package com.skillbox.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.skillbox.pojo.EnteredDataForEditPassword;
+import com.skillbox.controller.dto.request.EnteredDataForEditPasswordRequestDTO;
 import lombok.Data;
 
 @Data
@@ -12,7 +12,7 @@ public class EditPasswordResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ErrorsEditPasswordDTO errors;
 
-    public EditPasswordResponseDTO(EnteredDataForEditPassword enteredDataForEditPassword) {
+    public EditPasswordResponseDTO(EnteredDataForEditPasswordRequestDTO enteredDataForEditPassword) {
         if (enteredDataForEditPassword.getPassword().isEmpty() &&
                 enteredDataForEditPassword.getCaptcha().isEmpty() &&
                 enteredDataForEditPassword.getCode().isEmpty()) {

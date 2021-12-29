@@ -1,7 +1,7 @@
 package com.skillbox.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.skillbox.pojo.EnteredUser;
+import com.skillbox.controller.dto.request.EnteredUserRequestDTO;
 import lombok.Data;
 
 @Data
@@ -12,7 +12,7 @@ public class RegisterResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ErrorsRegisterDTO errors;
 
-    public RegisterResponseDTO(EnteredUser enteredUser) {
+    public RegisterResponseDTO(EnteredUserRequestDTO enteredUser) {
         if (enteredUser.getCaptcha().isEmpty() &&
                 enteredUser.getEmail().isEmpty() &&
                 enteredUser.getName().isEmpty() &&

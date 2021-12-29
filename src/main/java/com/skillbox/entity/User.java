@@ -136,7 +136,7 @@ public class User {
             e.printStackTrace();
         }
 
-        Path path = Paths.get("src/main/resources/META-INF/resources/upload/ab/cd/ef/");
+        Path path = Paths.get("src/main/resources/static/upload/ab/cd/ef/");
 
         if (!Files.exists(path)) {
             try {
@@ -146,10 +146,10 @@ public class User {
             }
         }
 
-        File file = new File(path.toAbsolutePath() + "/" + this.userId + ".jpg");
+        File file = new File(path.toAbsolutePath() + "/" + this.userId + ".png");
 
         try {
-            ImageIO.write(bi, "jpg", file);
+            ImageIO.write(bi, "png", file);
         } catch (IOException e) {
             e.printStackTrace();
         }

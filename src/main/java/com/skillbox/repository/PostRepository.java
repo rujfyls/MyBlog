@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +65,18 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     Page<Post> findPostByTag(String tag, Pageable pageable);
 
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1  " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND p.time <= current_timestamp " +
+            "AND p.text LIKE CONCAT('%',:query,'%')")
+    Page<Post> findPostsWithSearchQuery(String query, Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.isActive = 1  " +
+            "AND p.moderationStatus = 'ACCEPTED' " +
+            "AND p.time <= current_timestamp " +
+            "AND p.text LIKE CONCAT('%',:query,'%')")
+    Integer getPostsCountWithSearchQuery(String query);
+
     @Query("SELECT COUNT(p) FROM Post p JOIN p.tags t WHERE t.name = :tag AND p.isActive = 1  " +
             "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     Integer getPostsCountByTag(String tag);
@@ -120,5 +133,5 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "AND p.moderationStatus = 'ACCEPTED' " +
             "AND u.userId = :userId " +
             "ORDER BY p.time ASC")
-    Page<Post> findFirstPublicationByUserId(Integer userId, Pageable pageable);
+    List<Post> findFirstPublicationByUserId(Integer userId);
 }

@@ -4,7 +4,7 @@ import com.skillbox.controller.dto.request.ProfileRequestDTO;
 import com.skillbox.controller.dto.request.SettingsRequestDTO;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.User;
-import com.skillbox.pojo.EnteredDataForEditProfile;
+import com.skillbox.controller.dto.request.EnteredDataForEditProfileRequestDTO;
 import com.skillbox.service.PostService;
 import com.skillbox.service.SettingService;
 import com.skillbox.service.UserService;
@@ -25,10 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
+import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -141,9 +139,7 @@ public class ApiGeneralController {
 
     @RequestMapping(path = "/image", method = POST, consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('user:write')")
-    public String uploadImage(@RequestPart("image") MultipartFile image, Principal principal) throws IOException {
-        User currentUser = userService.getUserByEmail(principal.getName());
-
+    public String uploadImage(@RequestPart("image") MultipartFile image) throws IOException {
         if (image.isEmpty()) {
             return new ResponseEntity<>(new ImageResponseDRO("Missing data"),
                     HttpStatus.BAD_REQUEST).toString();
@@ -158,7 +154,7 @@ public class ApiGeneralController {
                     HttpStatus.BAD_REQUEST).toString();
         }
 
-        return saveImage(image, currentUser);
+        return saveImage(image, null);
     }
 
     @RequestMapping(path = "/profile/my", method = POST, consumes = {"multipart/form-data"})
@@ -171,7 +167,7 @@ public class ApiGeneralController {
                                               @RequestParam(value = "password", required = false) String password) throws IOException {
         User currentUser = userService.getUserByEmail(principal.getName());
 
-        EnteredDataForEditProfile enteredData = userService.checkingEnteredDataForEditProfile(
+        EnteredDataForEditProfileRequestDTO enteredData = userService.checkingEnteredDataForEditProfile(
                 currentUser,
                 name,
                 email,
@@ -201,7 +197,7 @@ public class ApiGeneralController {
     public EditProfileResponseDTO editProfile(Principal principal, @RequestBody ProfileRequestDTO profileRequestDTO) {
         User currentUser = userService.getUserByEmail(principal.getName());
 
-        EnteredDataForEditProfile enteredData = userService.checkingEnteredDataForEditProfile(
+        EnteredDataForEditProfileRequestDTO enteredData = userService.checkingEnteredDataForEditProfile(
                 currentUser,
                 profileRequestDTO.getName(),
                 profileRequestDTO.getEmail(),
@@ -223,10 +219,10 @@ public class ApiGeneralController {
         return new EditProfileResponseDTO(enteredData);
     }
 
-    private BufferedImage resizeImage(BufferedImage originalImage) throws IOException {
-        BufferedImage resizedImage = new BufferedImage(36, 36, BufferedImage.TYPE_INT_RGB);
+    private BufferedImage resizeImage(BufferedImage originalImage, Integer width, Integer height) throws IOException {
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(originalImage, 0, 0, 36, 36, null);
+        graphics2D.drawImage(originalImage, 0, 0, width, height, null);
         graphics2D.dispose();
         return resizedImage;
     }
@@ -236,23 +232,31 @@ public class ApiGeneralController {
     }
 
     private String saveImage(MultipartFile image, User user) throws IOException {
-        BufferedImage bufferedImage = resizeImage(ImageIO.read(image.getInputStream()));
+        BufferedImage bi = ImageIO.read(image.getInputStream());
+
+        if (user != null) {
+            bi = resizeImage(bi, 36, 36);
+        } else if (bi.getWidth() > 400 || bi.getHeight() > 400) {
+            bi = resizeImage(bi, 400, 400);
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", baos);
+        ImageIO.write(bi, "png", baos);
         byte[] bytes = baos.toByteArray();
 
-        String imageToString = Base64.getEncoder().encodeToString(bytes);
-        user.setPhoto(imageToString);
-        userService.save(user);
+        if (user != null) {
+            String imageToString = Base64.getEncoder().encodeToString(bytes);
+            user.setPhoto(imageToString);
+            userService.save(user);
+        }
 
-        String format = getImageFormat(image.getOriginalFilename());
-        Path path = Paths.get("src/main/resources/META-INF/resources/upload/ab/cd/ef/");
+        String format = getImageFormat(Objects.requireNonNull(image.getOriginalFilename()));
+        Path path = Paths.get("src/main/resources/static/upload/ab/cd/ef/");
         if (!Files.exists(path)) {
             Files.createDirectories(path);
         }
-        File file = new File(path.toAbsolutePath() + "/" + user.hashCode() + "." + format);
-        ImageIO.write(bufferedImage, format, file);
+        File file = new File(path.toAbsolutePath() + "/" + image.hashCode() + "." + format);
+        ImageIO.write(bi, format, file);
 
         return file.getPath().substring(file.getPath().indexOf("upload") - 1);
     }

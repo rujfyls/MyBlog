@@ -2,9 +2,9 @@ package com.skillbox.service;
 
 import com.skillbox.entity.User;
 import com.skillbox.exceptions.UserNotFoundException;
-import com.skillbox.pojo.EnteredDataForEditPassword;
-import com.skillbox.pojo.EnteredDataForEditProfile;
-import com.skillbox.pojo.EnteredUser;
+import com.skillbox.controller.dto.request.EnteredDataForEditPasswordRequestDTO;
+import com.skillbox.controller.dto.request.EnteredDataForEditProfileRequestDTO;
+import com.skillbox.controller.dto.request.EnteredUserRequestDTO;
 import com.skillbox.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,11 +60,11 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public EnteredUser checkingEnteredData(String name,
-                                           String email,
-                                           String password,
-                                           String captcha) {
-        EnteredUser inputError = new EnteredUser();
+    public EnteredUserRequestDTO checkingEnteredData(String name,
+                                                     String email,
+                                                     String password,
+                                                     String captcha) {
+        EnteredUserRequestDTO inputError = new EnteredUserRequestDTO();
         inputError.setEmail(checkingEmail(email));
         inputError.setName(checkingName(name));
         inputError.setPassword(checkingPassword(password));
@@ -73,12 +73,12 @@ public class UserService {
         return inputError;
     }
 
-    public EnteredDataForEditProfile checkingEnteredDataForEditProfile(User user,
-                                                                       String name,
-                                                                       String email,
-                                                                       String password,
-                                                                       MultipartFile photo) {
-        EnteredDataForEditProfile enteredData = new EnteredDataForEditProfile();
+    public EnteredDataForEditProfileRequestDTO checkingEnteredDataForEditProfile(User user,
+                                                                                 String name,
+                                                                                 String email,
+                                                                                 String password,
+                                                                                 MultipartFile photo) {
+        EnteredDataForEditProfileRequestDTO enteredData = new EnteredDataForEditProfileRequestDTO();
         enteredData.setName(checkingName(name));
         if (!user.getEmail().equals(email)) {
             enteredData.setEmail(checkingEmail(email));
@@ -95,11 +95,11 @@ public class UserService {
         return enteredData;
     }
 
-    public EnteredDataForEditPassword checkingEnteredDataForEditPassword(User user,
-                                                                         String code,
-                                                                         String password,
-                                                                         String captcha) {
-        EnteredDataForEditPassword enteredData = new EnteredDataForEditPassword();
+    public EnteredDataForEditPasswordRequestDTO checkingEnteredDataForEditPassword(User user,
+                                                                                   String code,
+                                                                                   String password,
+                                                                                   String captcha) {
+        EnteredDataForEditPasswordRequestDTO enteredData = new EnteredDataForEditPasswordRequestDTO();
         LocalTime hashCreationTime = hashStorageForRestorePassword.get(code);
         LocalTime time = LocalTime.now().minusHours(Long.parseLong(hashForRestorePasswordDeletionInterval));
 

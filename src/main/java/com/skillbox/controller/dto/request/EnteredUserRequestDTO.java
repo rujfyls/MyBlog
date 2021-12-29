@@ -1,9 +1,9 @@
-package com.skillbox.pojo;
+package com.skillbox.controller.dto.request;
 
 import lombok.Data;
 
 @Data
-public class EnteredUser {
+public class EnteredUserRequestDTO {
 
     private String email;
 

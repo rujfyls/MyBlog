@@ -1,9 +1,9 @@
-package com.skillbox.pojo;
+package com.skillbox.controller.dto.request;
 
 import lombok.Data;
 
 @Data
-public class EnteredDataForEditPassword {
+public class EnteredDataForEditPasswordRequestDTO {
 
     private String code;
 

@@ -1,7 +1,7 @@
 package com.skillbox.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.skillbox.pojo.EnteredDataForEditProfile;
+import com.skillbox.controller.dto.request.EnteredDataForEditProfileRequestDTO;
 import lombok.Data;
 
 @Data
@@ -19,7 +19,7 @@ public class ErrorsEditProfileDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String photo;
 
-    public ErrorsEditProfileDTO(EnteredDataForEditProfile enteredData) {
+    public ErrorsEditProfileDTO(EnteredDataForEditProfileRequestDTO enteredData) {
         this.name = enteredData.getName();
         this.email = enteredData.getEmail();
         this.password = enteredData.getPassword();

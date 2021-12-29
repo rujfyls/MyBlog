@@ -1,9 +1,9 @@
-package com.skillbox.pojo;
+package com.skillbox.controller.dto.request;
 
 import lombok.Data;
 
 @Data
-public class EnteredDataForEditProfile {
+public class EnteredDataForEditProfileRequestDTO {
 
     private String name = "";
 

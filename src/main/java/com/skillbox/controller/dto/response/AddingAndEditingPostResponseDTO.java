@@ -1,7 +1,7 @@
 package com.skillbox.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.skillbox.pojo.EnteredPost;
+import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +14,7 @@ public class AddingAndEditingPostResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ErrorsAddPostDTO errors;
 
-    public AddingAndEditingPostResponseDTO(EnteredPost enteredPost) {
+    public AddingAndEditingPostResponseDTO(EnteredPostRequestDTO enteredPost) {
         if (enteredPost.getTitle().isEmpty() &&
                 enteredPost.getText().isEmpty()) {
             this.result = true;
