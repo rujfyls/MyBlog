@@ -1,15 +1,11 @@
 package com.skillbox.controller;
 
-import com.skillbox.controller.dto.request.CommentRequestDTO;
-import com.skillbox.controller.dto.request.LikeOrDislikeRequestDTO;
-import com.skillbox.controller.dto.request.PostModerationRequestDTO;
-import com.skillbox.controller.dto.request.PostRequestDTO;
+import com.skillbox.controller.dto.request.*;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.Comment;
 import com.skillbox.entity.Post;
 import com.skillbox.entity.Tag;
 import com.skillbox.entity.User;
-import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import com.skillbox.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -193,6 +189,7 @@ public class ApiPostController {
         EnteredPostRequestDTO enteredPost = postService.checkingEnteredPost(title, text);
 
         if (enteredPost.checkingForErrors()) {
+            post.setIsActive(postRequestDTO.getActive());
             post.setText(text);
             post.setTitle(title);
 
