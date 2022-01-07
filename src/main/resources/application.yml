@@ -41,3 +41,9 @@ blog:
 
   captchaDeletionIntervalInHours: 1
   hashForRestorePasswordDeletionIntervalInHours: 1
+
+# Cloudinary configuration
+cloudinary:
+  cloud_name: https-feduncov-blog-herokuapp-com
+  api_key: 311845271332457
+  api_secret: GFh0Dmalb2f3HHImHAcmNNbHCAc

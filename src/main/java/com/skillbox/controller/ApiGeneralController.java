@@ -1,10 +1,12 @@
 package com.skillbox.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.skillbox.controller.dto.request.EnteredDataForEditProfileRequestDTO;
 import com.skillbox.controller.dto.request.ProfileRequestDTO;
 import com.skillbox.controller.dto.request.SettingsRequestDTO;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.User;
-import com.skillbox.controller.dto.request.EnteredDataForEditProfileRequestDTO;
 import com.skillbox.service.PostService;
 import com.skillbox.service.SettingService;
 import com.skillbox.service.UserService;
@@ -18,15 +20,16 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -38,16 +41,19 @@ public class ApiGeneralController {
     private final SettingService settingService;
     private final UserService userService;
     private final PostService postService;
+    private final Cloudinary cloudinaryConfig;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public ApiGeneralController(InitResponseDTO initResponseDTO,
                                 SettingService settingService,
                                 UserService userService,
-                                PostService postService) {
+                                PostService postService,
+                                Cloudinary cloudinaryConfig) {
         this.initResponseDTO = initResponseDTO;
         this.settingService = settingService;
         this.userService = userService;
         this.postService = postService;
+        this.cloudinaryConfig = cloudinaryConfig;
     }
 
     @GetMapping("/init")
@@ -240,24 +246,23 @@ public class ApiGeneralController {
             bi = resizeImage(bi, 400, 400);
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi, "png", baos);
-        byte[] bytes = baos.toByteArray();
-
-        if (user != null) {
-            String imageToString = Base64.getEncoder().encodeToString(bytes);
-            user.setPhoto(imageToString);
-            userService.save(user);
-        }
-
-        String format = getImageFormat(Objects.requireNonNull(image.getOriginalFilename()));
-        Path path = Paths.get("src/main/resources/static/upload/ab/cd/ef/");
+        Path path = Paths.get("src/main/resources/upload/ab/cd/ef/");
         if (!Files.exists(path)) {
             Files.createDirectories(path);
         }
-        File file = new File(path.toAbsolutePath() + "/" + image.hashCode() + "." + format);
-        ImageIO.write(bi, format, file);
+        File file = new File(path.toAbsolutePath() + "/" + image.getOriginalFilename());
+        ImageIO.write(bi, "png", file);
 
-        return file.getPath().substring(file.getPath().indexOf("upload") - 1);
+        Map uploadResult = cloudinaryConfig.uploader().upload(file, ObjectUtils.emptyMap());
+        String url = uploadResult.get("url").toString();
+
+        file.delete();
+
+        if (user != null) {
+            user.setPhoto(url);
+            userService.save(user);
+        }
+
+        return url;
     }
 }

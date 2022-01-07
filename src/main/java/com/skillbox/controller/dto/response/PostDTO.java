@@ -3,6 +3,7 @@ package com.skillbox.controller.dto.response;
 import com.skillbox.entity.Post;
 import com.skillbox.entity.Vote;
 import lombok.Data;
+import org.jsoup.Jsoup;
 
 import java.time.ZoneOffset;
 
@@ -33,7 +34,7 @@ public class PostDTO {
         this.user = new UserForPostResponseDTO(post.getUser());
         this.title = post.getTitle();
         if (post.getText().length() > 145) {
-            this.announce = post.getText().substring(0, 145).concat("...");
+            this.announce = Jsoup.parse(post.getText()).text().substring(0, 145).concat("...");
         } else {
             this.announce = post.getText();
         }

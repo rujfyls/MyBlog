@@ -124,7 +124,7 @@ public class ApiAuthController {
 
             emailService.sendMail(user.getEmail(),
                     "Восстановление пароля",
-                    "ссылка для восстановления пароля: \n /login/change-password/" + hash);
+                    "ссылка для восстановления пароля: \n https://feduncov-blog.herokuapp.com/login/change-password/" + hash);
             return new ResultResponseDTO(true);
         }
         return new ResultResponseDTO(false);

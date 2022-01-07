@@ -7,19 +7,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.imageio.ImageIO;
 import javax.persistence.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -105,13 +95,6 @@ public class User {
         return isModerator == 1 ? Role.MODERATOR : Role.USER;
     }
 
-    public String getPhoto() {
-        if (photo != null && !photo.trim().isEmpty()) {
-            return decodeBase64ToImage(photo);
-        }
-        return "";
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,36 +106,5 @@ public class User {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    private String decodeBase64ToImage(String base64ToImage) {
-        byte[] image = Base64.getDecoder().decode(base64ToImage);
-        InputStream is = new ByteArrayInputStream(image);
-        BufferedImage bi = null;
-
-        try {
-            bi = ImageIO.read(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Path path = Paths.get("src/main/resources/static/upload/ab/cd/ef/");
-
-        if (!Files.exists(path)) {
-            try {
-                Files.createDirectories(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        File file = new File(path.toAbsolutePath() + "/" + this.userId + ".png");
-
-        try {
-            ImageIO.write(bi, "png", file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file.getPath().substring(file.getPath().indexOf("upload") - 1);
     }
 }
