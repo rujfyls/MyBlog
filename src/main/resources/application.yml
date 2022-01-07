@@ -8,9 +8,9 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/my_blog?currentSchema=my_blog
-    username: postgres
-    password: zaq12wsx
+    url: jdbc:${DATABASE_URL:postgresql://localhost:5432/my_blog?currentSchema=my_blog}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:zaq12wsx}
 
   mail:
     host: smtp.gmail.com
@@ -26,6 +26,9 @@ spring:
 
   thymeleaf:
     cache: false
+
+server:
+  port: ${PORT:8080}
 
 #  default values for initialization:
 blog:
