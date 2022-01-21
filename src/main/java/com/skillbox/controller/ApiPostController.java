@@ -88,7 +88,6 @@ public class ApiPostController {
                                        @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
                                        @RequestParam(value = "tag", required = false) String tag) {
 
-        List<Post> listOfFoundPosts = postService.getPostsByTag(offset / limit, limit, tag);
         return new PostsResponseDTO(postService.getPostsCountByTag(tag),
                 postService.getPostsByTag(offset / limit, limit, tag));
     }

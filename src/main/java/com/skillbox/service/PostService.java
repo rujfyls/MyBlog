@@ -108,7 +108,7 @@ public class PostService {
     public Post getPostById(Integer postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post with id=" + postId + " not found"));
-        if (user.getIsModerator() == 0 || !post.getUser().equals(user)) {
+        if (!post.getUser().equals(user) && user.getIsModerator() == 0) {
             post.setViewCount(post.getViewCount() + 1);
             postRepository.save(post);
         }
