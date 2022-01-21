@@ -97,22 +97,22 @@ public class PostService {
         return postRepository.getPostsCountByTag(tag);
     }
 
+    public Post getPostById(Integer postId, User user) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+                new PostNotFoundException("Post with id=" + postId + " not found"));
+
+        if (user.getIsModerator() == 0 && !post.getUser().equals(user)) {
+            post.setViewCount(post.getViewCount() + 1);
+            postRepository.save(post);
+        }
+        return post;
+    }
+
     public Post getPostById(Integer postId) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post with id=" + postId + " not found"));
         post.setViewCount(post.getViewCount() + 1);
         postRepository.save(post);
-        return post;
-    }
-
-    public Post getPostById(Integer postId, User user) {
-        Post post = postRepository.findById(postId).orElseThrow(() ->
-                new PostNotFoundException("Post with id=" + postId + " not found"));
-
-        if (!post.getUser().equals(user)  &&  user.getIsModerator() == 0) {
-            post.setViewCount(post.getViewCount() + 1);
-            postRepository.save(post);
-        }
         return post;
     }
 
