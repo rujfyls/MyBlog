@@ -74,7 +74,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
     @Query("SELECT COUNT(p) FROM Post p WHERE p.isActive = 1  " +
             "AND p.moderationStatus = 'ACCEPTED' " +
             "AND p.time <= current_timestamp " +
-            "AND p.text LIKE CONCAT('%',:query,'%')")
+            "AND (p.text LIKE CONCAT('%',:query,'%') OR p.title LIKE CONCAT('%',:query,'%'))")
     Integer getPostsCountWithSearchQuery(String query);
 
     @Query("SELECT COUNT(p) FROM Post p JOIN p.tags t WHERE t.name = :tag AND p.isActive = 1  " +
