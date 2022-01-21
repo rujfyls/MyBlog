@@ -1,10 +1,10 @@
 package com.skillbox.service;
 
+import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import com.skillbox.entity.Post;
 import com.skillbox.entity.User;
 import com.skillbox.entity.enums.ModerationStatus;
 import com.skillbox.exceptions.PostNotFoundException;
-import com.skillbox.controller.dto.request.EnteredPostRequestDTO;
 import com.skillbox.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -108,7 +108,8 @@ public class PostService {
     public Post getPostById(Integer postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post with id=" + postId + " not found"));
-        if (!post.getUser().equals(user) && user.getIsModerator() == 0) {
+
+        if (!post.getUser().equals(user)  &&  user.getIsModerator() == 0) {
             post.setViewCount(post.getViewCount() + 1);
             postRepository.save(post);
         }
