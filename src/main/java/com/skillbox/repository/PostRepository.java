@@ -65,10 +65,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "AND p.moderationStatus = 'ACCEPTED' AND p.time <= current_timestamp")
     Page<Post> findPostByTag(String tag, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE p.isActive = 1  " +
+    @Query("SELECT p FROM Post p WHERE p.isActive = 1 " +
             "AND p.moderationStatus = 'ACCEPTED' " +
             "AND p.time <= current_timestamp " +
-            "AND p.text LIKE CONCAT('%',:query,'%')")
+            "AND (p.text LIKE CONCAT('%',:query,'%') OR p.title LIKE CONCAT('%',:query,'%'))")
     Page<Post> findPostsWithSearchQuery(String query, Pageable pageable);
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.isActive = 1  " +

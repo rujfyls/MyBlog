@@ -1,4 +1,4 @@
-insert into tags(name) values('spring');
+insert into tags(name) values('SPRING');
 
 insert into users(email, is_moderator, name, password, reg_time) values('dexter_aljp1994@gmail.com', 0, 'Ivan', '$2a$12$p8c88WRUSCLVhpUKdWefEu4FzVUFN5tCr/TaP08Y7iMevtfyppFmu', CURRENT_TIMESTAMP);
 insert into users(email, is_moderator, name, password, reg_time) values('katrinka@gmail.com', 0, 'Kate', '$2a$12$p8c88WRUSCLVhpUKdWefEu4FzVUFN5tCr/TaP08Y7iMevtfyppFmu', CURRENT_TIMESTAMP);
@@ -19,8 +19,8 @@ insert into posts(is_active, moderation_status, text, time, title, view_count, u
 insert into tag2post(tag_id, post_id) values(1,1);
 insert into tag2post(tag_id, post_id) values(1,2);
 insert into tag2post(tag_id, post_id) values(1,2);
-insert into tag2post(tag_id, post_id) values(3,4);
-insert into tag2post(tag_id, post_id) values(3,5);
+insert into tag2post(tag_id, post_id) values(2,4);
+insert into tag2post(tag_id, post_id) values(2,5);
 insert into tag2post(tag_id, post_id) values(3,6);
 insert into tag2post(tag_id, post_id) values(3,7);
 insert into tag2post(tag_id, post_id) values(3,8);
