@@ -268,9 +268,10 @@ public class ApiPostController {
     public ResponseEntity<ResultResponseDTO> like(@RequestBody LikeOrDislikeRequestDTO likeRequestDTO,
                                                   Principal principal) {
 
+        User currentUser = userService.getUserByEmail(principal.getName());
         return ResponseEntity.ok(new ResultResponseDTO(voteService.likePost(
-                postService.getPostById(likeRequestDTO.getPostId()),
-                userService.getUserByEmail(principal.getName()))));
+                postService.getPostById(likeRequestDTO.getPostId(), currentUser),
+                currentUser)));
     }
 
     @PostMapping("/post/dislike")
@@ -278,15 +279,16 @@ public class ApiPostController {
     public ResponseEntity<ResultResponseDTO> dislike(@RequestBody LikeOrDislikeRequestDTO dislikeRequestDTO,
                                                      Principal principal) {
 
+        User currentUser = userService.getUserByEmail(principal.getName());
         return ResponseEntity.ok(new ResultResponseDTO(voteService.dislikePost(
-                postService.getPostById(dislikeRequestDTO.getPostId()),
-                userService.getUserByEmail(principal.getName()))));
+                postService.getPostById(dislikeRequestDTO.getPostId(), currentUser),
+                currentUser)));
     }
 
     private Post getPostById(Integer postId, User user) {
-        Post inactivePost = postService.getInactivePostByIdAndUserId(postId, user.getUserId());
-        if (inactivePost != null) {
-            return inactivePost;
+        Post myPost = postService.getMyPostByIdAndUserId(postId, user.getUserId());
+        if (myPost != null) {
+            return myPost;
         }
 
         if (user.getIsModerator() > 0) {
@@ -300,6 +302,7 @@ public class ApiPostController {
                 return postRejectedForModerator;
             }
         }
+
 
         return postService.getPostById(postId, user);
     }

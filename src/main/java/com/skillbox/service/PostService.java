@@ -116,8 +116,8 @@ public class PostService {
         return post;
     }
 
-    public Post getInactivePostByIdAndUserId(Integer postId, Integer userId) {
-        return postRepository.findInactivePostByIdAndUserId(postId, userId);
+    public Post getMyPostByIdAndUserId(Integer postId, Integer userId) {
+        return postRepository.findMyPostByIdAndUserId(postId, userId);
     }
 
     public Post getPostRejectedForModerator(Integer postId, Integer userId) {

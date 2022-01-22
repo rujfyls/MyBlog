@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -85,9 +84,8 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "AND p.time <= current_timestamp AND postId = :postId")
     Optional<Post> findById(Integer postId);
 
-    @Query("SELECT p FROM Post p JOIN p.user u WHERE p.isActive = 0 AND p.moderationStatus = 'NEW' " +
-            "AND u.userId = :userId AND p.postId = :postId")
-    Post findInactivePostByIdAndUserId(Integer postId, Integer userId);
+    @Query("SELECT p FROM Post p JOIN p.user u WHERE u.userId = :userId AND p.postId = :postId")
+    Post findMyPostByIdAndUserId(Integer postId, Integer userId);
 
     @Query("SELECT p FROM Post p WHERE p.isActive = 1 " +
             "AND p.moderatorId = :userId AND p.postId = :postId")
@@ -115,13 +113,13 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
     @Query("SELECT COUNT(v) FROM Vote v JOIN v.user u JOIN v.post p WHERE p.isActive = 1 " +
             "AND p.moderationStatus = 'ACCEPTED' " +
             "AND v.value > 0 " +
-            "AND u.userId = :userId")
+            "AND p.user.userId = :userId")
     Integer getLikesCountByUserId(Integer userId);
 
     @Query("SELECT COUNT(v) FROM Vote v JOIN v.user u JOIN v.post p WHERE p.isActive = 1 " +
             "AND p.moderationStatus = 'ACCEPTED' " +
             "AND v.value < 0 " +
-            "AND u.userId = :userId")
+            "AND p.user.userId = :userId")
     Integer getDislikesCountByUserId(Integer userId);
 
     @Query("SELECT SUM(p.viewCount) FROM Post p JOIN p.user u WHERE p.isActive = 1 " +
