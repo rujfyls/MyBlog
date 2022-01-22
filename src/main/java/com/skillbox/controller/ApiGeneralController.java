@@ -57,12 +57,12 @@ public class ApiGeneralController {
     }
 
     @GetMapping("/init")
-    public InitResponseDTO init() {
-        return initResponseDTO;
+    public ResponseEntity<InitResponseDTO> init() {
+        return ResponseEntity.ok(initResponseDTO);
     }
 
     @GetMapping("/settings")
-    public SettingResponseDTO settings() {
+    public ResponseEntity<SettingResponseDTO> settings() {
         SettingResponseDTO setting = new SettingResponseDTO();
         settingService.findAll().forEach(s -> {
             if (s.getCode().equals("MULTIUSER_MODE")) {
@@ -73,7 +73,7 @@ public class ApiGeneralController {
                 setting.setStatisticsIsPublic(s.getValue().equals("YES"));
             }
         });
-        return setting;
+        return ResponseEntity.ok(setting);
     }
 
     @PutMapping("/settings")
@@ -93,7 +93,7 @@ public class ApiGeneralController {
 
     @GetMapping("/statistics/my")
     @PreAuthorize("hasAuthority('user:write')")
-    public StatisticsResponseDTO myStatistics(Principal principal) {
+    public ResponseEntity<StatisticsResponseDTO> myStatistics(Principal principal) {
         Integer userId = userService.getUserByEmail(principal.getName()).getUserId();
         StatisticsResponseDTO statistics = new StatisticsResponseDTO();
 
@@ -103,15 +103,18 @@ public class ApiGeneralController {
         statistics.setViewsCount(postService.getViewsCountByUserId(userId));
         statistics.setDislikesCount(postService.getDislikesCountByUserId(userId));
 
-        return statistics;
+        return ResponseEntity.ok(statistics);
     }
 
     @GetMapping("/statistics/all")
-    @PreAuthorize("hasAuthority('user:moderate')")
     public ResponseEntity<StatisticsResponseDTO> allStatistics(Principal principal) {
-        Short isModerator = userService.getUserByEmail(principal.getName()).getIsModerator();
-        if (isModerator != 1 || settingService.getSettingsByStatistics().getValue().equals("NO")) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (settingService.getSettingsByStatistics().getValue().equals("NO")) {
+            if (principal == null) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+            if (userService.getUserByEmail(principal.getName()).getIsModerator() != 1) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
         }
 
         List<Integer> listUsersId = userService.getListUsersId();
@@ -165,12 +168,14 @@ public class ApiGeneralController {
 
     @RequestMapping(path = "/profile/my", method = POST, consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('user:write')")
-    public EditProfileResponseDTO editProfile(Principal principal,
-                                              @RequestPart(value = "photo", required = false) MultipartFile photo,
-                                              @RequestParam(value = "removePhoto", required = false) Short removePhoto,
-                                              @RequestParam(value = "name", required = false) String name,
-                                              @RequestParam(value = "email", required = false) String email,
-                                              @RequestParam(value = "password", required = false) String password) throws IOException {
+    public ResponseEntity<EditProfileResponseDTO> editProfile(
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @RequestParam(value = "removePhoto", required = false) Short removePhoto,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "password", required = false) String password,
+            Principal principal) throws IOException {
+
         User currentUser = userService.getUserByEmail(principal.getName());
 
         EnteredDataForEditProfileRequestDTO enteredData = userService.checkingEnteredDataForEditProfile(
@@ -195,12 +200,14 @@ public class ApiGeneralController {
             userService.save(currentUser);
         }
 
-        return new EditProfileResponseDTO(enteredData);
+        return ResponseEntity.ok(new EditProfileResponseDTO(enteredData));
     }
 
     @RequestMapping(path = "/profile/my", method = POST, consumes = {"application/json"})
     @PreAuthorize("hasAuthority('user:write')")
-    public EditProfileResponseDTO editProfile(Principal principal, @RequestBody ProfileRequestDTO profileRequestDTO) {
+    public ResponseEntity<EditProfileResponseDTO> editProfile(@RequestBody ProfileRequestDTO profileRequestDTO,
+                                                              Principal principal) {
+
         User currentUser = userService.getUserByEmail(principal.getName());
 
         EnteredDataForEditProfileRequestDTO enteredData = userService.checkingEnteredDataForEditProfile(
@@ -222,7 +229,7 @@ public class ApiGeneralController {
             userService.save(currentUser);
         }
 
-        return new EditProfileResponseDTO(enteredData);
+        return ResponseEntity.ok(new EditProfileResponseDTO(enteredData));
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage, Integer width, Integer height) throws IOException {

@@ -2,19 +2,15 @@ package com.skillbox.controller;
 
 import com.github.cage.GCage;
 import com.github.cage.YCage;
-import com.skillbox.controller.dto.request.EditPasswordRequestDTO;
-import com.skillbox.controller.dto.request.LoginRequestDTO;
-import com.skillbox.controller.dto.request.RestorePasswordRequestDTO;
-import com.skillbox.controller.dto.request.UserRequestDTO;
+import com.skillbox.controller.dto.request.*;
 import com.skillbox.controller.dto.response.*;
 import com.skillbox.entity.User;
-import com.skillbox.controller.dto.request.EnteredDataForEditPasswordRequestDTO;
-import com.skillbox.controller.dto.request.EnteredUserRequestDTO;
 import com.skillbox.service.CaptchaService;
 import com.skillbox.service.EmailService;
 import com.skillbox.service.PostService;
 import com.skillbox.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,22 +42,22 @@ public class ApiAuthController {
     }
 
     @GetMapping("/check")
-    public UserCheckResponseDTO authorCheck(Principal principal) {
+    public ResponseEntity<UserCheckResponseDTO> authorCheck(Principal principal) {
         UserCheckResponseDTO user = new UserCheckResponseDTO();
         if (principal == null) {
             user.setResult(false);
-            return user;
+            return ResponseEntity.ok(user);
         }
         user.setResult(true);
         user.setUser(new UserDTO(userService.getUserByEmail(principal.getName()),
                 postService.getCountPostsForModeration("new",
                         userService.getUserByEmail(principal.getName()).getUserId())));
 
-        return user;
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/captcha")
-    public CaptchaResponseDTO captcha() throws IOException {
+    public ResponseEntity<CaptchaResponseDTO> captcha() throws IOException {
         GCage gCage = new GCage();
         YCage yCage = new YCage();
         String code = gCage.getTokenGenerator().next().substring(0, 5);
@@ -70,14 +66,16 @@ public class ApiAuthController {
 
         captchaService.saveCaptcha(secretCode, code);
 
-        return new CaptchaResponseDTO(secretCode, "data:image/png;base64, " + image);
+        return ResponseEntity.ok(new CaptchaResponseDTO(secretCode, "data:image/png;base64, " + image));
     }
 
     @PostMapping("/register")
-    public RegisterResponseDTO register(@RequestBody UserRequestDTO userRequestDTO) {
-        EnteredUserRequestDTO enteredUser = userService.checkingEnteredData(userRequestDTO.getName(), userRequestDTO.getEmail(),
-                userRequestDTO.getPassword(),
-                captchaService.checkingCaptcha(userRequestDTO.getCaptcha(), userRequestDTO.getCaptchaSecret()));
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody UserRequestDTO userRequestDTO) {
+
+        EnteredUserRequestDTO enteredUser =
+                userService.checkingEnteredData(userRequestDTO.getName(), userRequestDTO.getEmail(),
+                        userRequestDTO.getPassword(),
+                        captchaService.checkingCaptcha(userRequestDTO.getCaptcha(), userRequestDTO.getCaptchaSecret()));
 
         if (enteredUser.checkingForErrors()) {
             userService.save(userRequestDTO.getName(),
@@ -85,34 +83,34 @@ public class ApiAuthController {
                     encoder.encode(userRequestDTO.getPassword()),
                     userRequestDTO.getCaptchaSecret());
         }
-        return new RegisterResponseDTO(enteredUser);
+        return ResponseEntity.ok(new RegisterResponseDTO(enteredUser));
     }
 
     @PostMapping("/login")
-    public UserCheckResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<UserCheckResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         UserCheckResponseDTO author = new UserCheckResponseDTO();
 
         if (userService.getUserByEmail(loginRequestDTO.getEmail()) == null) {
             author.setResult(false);
-            return author;
+            return ResponseEntity.ok(author);
         }
 
         User user = userService.getAuthenticatedUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         author.setResult(true);
         author.setUser(new UserDTO(user, postService.getCountPostsForModeration("new", user.getUserId())));
 
-        return author;
+        return ResponseEntity.ok(author);
     }
 
     @GetMapping("/logout")
     @PreAuthorize("hasAuthority('user:write')")
-    public LogoutResponseDTO logout() {
+    public ResponseEntity<LogoutResponseDTO> logout() {
         SecurityContextHolder.clearContext();
-        return new LogoutResponseDTO();
+        return ResponseEntity.ok(new LogoutResponseDTO());
     }
 
     @PostMapping("/restore")
-    public ResultResponseDTO restorePassword(@RequestBody RestorePasswordRequestDTO restorePassword) {
+    public ResponseEntity<ResultResponseDTO> restorePassword(@RequestBody RestorePasswordRequestDTO restorePassword) {
         User user = userService.getUserByEmail(restorePassword.getEmail());
 
         if (user != null) {
@@ -124,14 +122,15 @@ public class ApiAuthController {
 
             emailService.sendMail(user.getEmail(),
                     "Восстановление пароля",
-                    "ссылка для восстановления пароля: \n https://feduncov-blog.herokuapp.com/login/change-password/" + hash);
-            return new ResultResponseDTO(true);
+                    "ссылка для восстановления пароля: " +
+                            "\n https://feduncov-blog.herokuapp.com/login/change-password/" + hash);
+            return ResponseEntity.ok(new ResultResponseDTO(true));
         }
-        return new ResultResponseDTO(false);
+        return ResponseEntity.ok(new ResultResponseDTO(false));
     }
 
     @PostMapping("/password")
-    public EditPasswordResponseDTO editPassword(@RequestBody EditPasswordRequestDTO editPasswordRequestDTO) {
+    public ResponseEntity<EditPasswordResponseDTO> editPassword(@RequestBody EditPasswordRequestDTO editPasswordRequestDTO) {
 
         User user = userService.getUserByCode(editPasswordRequestDTO.getCode());
         EnteredDataForEditPasswordRequestDTO enteredData = userService.checkingEnteredDataForEditPassword(
@@ -146,6 +145,6 @@ public class ApiAuthController {
             userService.save(user);
         }
 
-        return new EditPasswordResponseDTO(enteredData);
+        return ResponseEntity.ok(new EditPasswordResponseDTO(enteredData));
     }
 }

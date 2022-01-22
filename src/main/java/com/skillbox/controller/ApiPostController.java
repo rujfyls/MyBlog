@@ -40,108 +40,120 @@ public class ApiPostController {
     }
 
     @GetMapping("/post")
-    public PostsResponseDTO posts(@RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                  @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                  @RequestParam(value = "mode", defaultValue = "recent", required = false) String mode) {
+    public ResponseEntity<PostsResponseDTO> posts(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "mode", defaultValue = "recent", required = false) String mode) {
 
-        return new PostsResponseDTO(postService.getCountAllActivePosts(),
-                postService.findAllActivePosts(offset / limit, limit, mode));
+        return ResponseEntity.ok(new PostsResponseDTO(postService.getCountAllActivePosts(),
+                postService.findAllActivePosts(offset / limit, limit, mode)));
     }
 
     @GetMapping("/tag")
-    public TagResponseDTO tag() {
-        return new TagResponseDTO(tagService.getWeightAllTags(postService.getCountAllPosts()));
+    public ResponseEntity<TagResponseDTO> tag() {
+        return ResponseEntity.ok(new TagResponseDTO(tagService.getWeightAllTags(postService.getCountAllPosts())));
     }
 
     @GetMapping("/post/search")
-    public PostsResponseDTO searchPosts(@RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                        @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                        @RequestParam(value = "query", required = false) String query) {
+    public ResponseEntity<PostsResponseDTO> searchPosts(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "query", required = false) String query) {
+
         if (query != null && !query.trim().isEmpty()) {
             List<Post> listOfFoundPosts = postService.searchPosts(offset / limit, limit, query);
             Integer postCount = postService.getPostsCountWithSearchQuery(query);
-            return new PostsResponseDTO(postCount, listOfFoundPosts);
+            return ResponseEntity.ok(new PostsResponseDTO(postCount, listOfFoundPosts));
         } else {
             return posts(offset / limit, limit, "recent");
         }
     }
 
     @GetMapping("/calendar")
-    public CalendarResponseDTO calendar(@RequestParam(value = "year", required = false) String year) {
+    public ResponseEntity<CalendarResponseDTO> calendar(@RequestParam(value = "year", required = false) String year) {
         if (year.isEmpty()) {
             year = String.valueOf(LocalDateTime.now().getYear());
         }
-        return new CalendarResponseDTO(postService.getListOfYearsWithPosts(), postService.getCountPostsByYear(year));
+        return ResponseEntity.ok(new CalendarResponseDTO(postService.getListOfYearsWithPosts(),
+                postService.getCountPostsByYear(year)));
     }
 
     @GetMapping("/post/byDate")
-    public PostsResponseDTO postsByDate(@RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                        @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                        @RequestParam(value = "date", required = false) String date) {
+    public ResponseEntity<PostsResponseDTO> postsByDate(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "date", required = false) String date) {
 
-        return new PostsResponseDTO(postService.getPostsCountByDate(date),
-                postService.getPostsByDate(offset / limit, limit, date));
+        return ResponseEntity.ok(new PostsResponseDTO(postService.getPostsCountByDate(date),
+                postService.getPostsByDate(offset / limit, limit, date)));
     }
 
     @GetMapping("/post/byTag")
-    public PostsResponseDTO postsByTag(@RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                       @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                       @RequestParam(value = "tag", required = false) String tag) {
+    public ResponseEntity<PostsResponseDTO> postsByTag(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "tag", required = false) String tag) {
 
-        return new PostsResponseDTO(postService.getPostsCountByTag(tag),
-                postService.getPostsByTag(offset / limit, limit, tag));
+        return ResponseEntity.ok(new PostsResponseDTO(postService.getPostsCountByTag(tag),
+                postService.getPostsByTag(offset / limit, limit, tag)));
     }
 
     @GetMapping("/post/{postId}")
-    public PostResponseDTO postById(@PathVariable Integer postId, Principal principal) {
+    public ResponseEntity<PostResponseDTO> postById(@PathVariable Integer postId, Principal principal) {
         if (principal != null) {
             User currentUser = userService.getUserByEmail(principal.getName());
             if (currentUser != null) {
-                return new PostResponseDTO(getPostById(postId, currentUser));
+                return ResponseEntity.ok(new PostResponseDTO(getPostById(postId, currentUser)));
             }
         }
-        return new PostResponseDTO(postService.getPostById(postId));
+        return ResponseEntity.ok(new PostResponseDTO(postService.getPostById(postId)));
     }
 
     @GetMapping("/post/my")
     @PreAuthorize("hasAuthority('user:write')")
-    public PostsResponseDTO myPosts(Principal principal,
-                                    @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                    @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                    @RequestParam(value = "status", required = false) String status) {
+    public ResponseEntity<PostsResponseDTO> myPosts(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "status", required = false) String status,
+            Principal principal) {
+
         User currentUser = userService.getUserByEmail(principal.getName());
 
         List<Post> findPosts = postService.findMyPosts(offset / limit, limit, status, currentUser.getUserId());
         Integer countPosts = postService.getCountMyPosts(status, currentUser.getUserId());
-        return new PostsResponseDTO(countPosts, findPosts);
+        return ResponseEntity.ok(new PostsResponseDTO(countPosts, findPosts));
     }
 
     @PostMapping("/moderation")
     @PreAuthorize("hasAuthority('user:moderate')")
-    public ResultResponseDTO moderationPost(@RequestBody PostModerationRequestDTO post, Principal principal) {
+    public ResponseEntity<ResultResponseDTO> moderationPost(@RequestBody PostModerationRequestDTO post, Principal principal) {
         User currentUser = userService.getUserByEmail(principal.getName());
         if (currentUser.getIsModerator() != 1) {
-            return new ResultResponseDTO(false);
+            return ResponseEntity.ok(new ResultResponseDTO(false));
         }
-        return new ResultResponseDTO(postService.checkingPostByModerator(post.getPostId(), post.getDecision(), currentUser));
+        return ResponseEntity.ok(new ResultResponseDTO(postService.checkingPostByModerator(
+                post.getPostId(), post.getDecision(), currentUser)));
     }
 
     @GetMapping("/post/moderation")
     @PreAuthorize("hasAuthority('user:moderate')")
-    public PostsResponseDTO moderation(Principal principal,
-                                       @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
-                                       @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
-                                       @RequestParam(value = "status", required = false) String status) {
+    public ResponseEntity<PostsResponseDTO> moderation(
+            @RequestParam(value = "offset", defaultValue = "0", required = false) Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10", required = false) Integer limit,
+            @RequestParam(value = "status", required = false) String status,
+            Principal principal) {
+
         User currentUser = userService.getUserByEmail(principal.getName());
 
         List<Post> findPosts = postService.getPostsForModeration(offset / limit, limit, status, currentUser.getUserId());
         Integer countPosts = postService.getCountPostsForModeration(status, currentUser.getUserId());
-        return new PostsResponseDTO(countPosts, findPosts);
+        return ResponseEntity.ok(new PostsResponseDTO(countPosts, findPosts));
     }
 
     @PostMapping("/post")
     @PreAuthorize("hasAuthority('user:write')")
-    public AddingAndEditingPostResponseDTO addPost(@RequestBody PostRequestDTO postRequestDTO, Principal principal) {
+    public ResponseEntity<AddingAndEditingPostResponseDTO> addPost(@RequestBody PostRequestDTO postRequestDTO,
+                                                                   Principal principal) {
 
         String text = postRequestDTO.getText();
         String title = postRequestDTO.getTitle();
@@ -170,14 +182,14 @@ public class ApiPostController {
 
             postService.save(post);
         }
-        return new AddingAndEditingPostResponseDTO(enteredPost);
+        return ResponseEntity.ok(new AddingAndEditingPostResponseDTO(enteredPost));
     }
 
     @PutMapping("/post/{postId}")
     @PreAuthorize("hasAuthority('user:write')")
-    public AddingAndEditingPostResponseDTO updatePost(@PathVariable Integer postId,
-                                                      @RequestBody PostRequestDTO postRequestDTO,
-                                                      Principal principal) {
+    public ResponseEntity<AddingAndEditingPostResponseDTO> updatePost(@PathVariable Integer postId,
+                                                                      @RequestBody PostRequestDTO postRequestDTO,
+                                                                      Principal principal) {
 
         Post post = getPostById(postId, userService.getUserByEmail(principal.getName()));
 
@@ -198,7 +210,7 @@ public class ApiPostController {
             postService.save(post);
         }
 
-        return new AddingAndEditingPostResponseDTO(enteredPost);
+        return ResponseEntity.ok(new AddingAndEditingPostResponseDTO(enteredPost));
     }
 
     @PostMapping("/comment")
@@ -253,18 +265,22 @@ public class ApiPostController {
 
     @PostMapping("/post/like")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResultResponseDTO like(@RequestBody LikeOrDislikeRequestDTO likeRequestDTO, Principal principal) {
-        return new ResultResponseDTO(voteService.likePost(
+    public ResponseEntity<ResultResponseDTO> like(@RequestBody LikeOrDislikeRequestDTO likeRequestDTO,
+                                                  Principal principal) {
+
+        return ResponseEntity.ok(new ResultResponseDTO(voteService.likePost(
                 postService.getPostById(likeRequestDTO.getPostId()),
-                userService.getUserByEmail(principal.getName())));
+                userService.getUserByEmail(principal.getName()))));
     }
 
     @PostMapping("/post/dislike")
     @PreAuthorize("hasAuthority('user:write')")
-    public ResultResponseDTO dislike(@RequestBody LikeOrDislikeRequestDTO dislikeRequestDTO, Principal principal) {
-        return new ResultResponseDTO(voteService.dislikePost(
+    public ResponseEntity<ResultResponseDTO> dislike(@RequestBody LikeOrDislikeRequestDTO dislikeRequestDTO,
+                                                     Principal principal) {
+
+        return ResponseEntity.ok(new ResultResponseDTO(voteService.dislikePost(
                 postService.getPostById(dislikeRequestDTO.getPostId()),
-                userService.getUserByEmail(principal.getName())));
+                userService.getUserByEmail(principal.getName()))));
     }
 
     private Post getPostById(Integer postId, User user) {
