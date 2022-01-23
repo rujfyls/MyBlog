@@ -89,8 +89,14 @@ public class ApiAuthController {
     @PostMapping("/login")
     public ResponseEntity<UserCheckResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         UserCheckResponseDTO author = new UserCheckResponseDTO();
+        User currentUser = userService.getUserByEmail(loginRequestDTO.getEmail());
 
-        if (userService.getUserByEmail(loginRequestDTO.getEmail()) == null) {
+        if (currentUser == null) {
+            author.setResult(false);
+            return ResponseEntity.ok(author);
+        }
+
+        if (!encoder.matches(loginRequestDTO.getPassword(), currentUser.getPassword())) {
             author.setResult(false);
             return ResponseEntity.ok(author);
         }
