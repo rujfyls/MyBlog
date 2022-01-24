@@ -8,9 +8,9 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
-    url: jdbc:${DATABASE_URL:postgresql://localhost:5432/my_blog?currentSchema=my_blog}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:zaq12wsx}
+    url: jdbc:${postgresql://ec2-52-214-125-106.eu-west-1.compute.amazonaws.com:5432/d9r8vttd17eoii:postgresql://localhost:5432/my_blog?currentSchema=my_blog}
+    username: ${dqnftyjyhqbsex:postgres}
+    password: ${b90a0f96afc6d364599437cdc11896f1cbf4264414b656ebb7a732a863679df0:zaq12wsx}
 
   servlet:
     multipart:
