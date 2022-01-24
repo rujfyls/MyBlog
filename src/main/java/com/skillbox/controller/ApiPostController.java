@@ -7,6 +7,7 @@ import com.skillbox.entity.Post;
 import com.skillbox.entity.Tag;
 import com.skillbox.entity.User;
 import com.skillbox.service.*;
+import org.jsoup.Jsoup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -236,7 +237,7 @@ public class ApiPostController {
             commentResponseDTO.setErrors(errorsCommentDTO);
             return ResponseEntity.badRequest().body(commentResponseDTO);
         }
-        if (text.trim().length() < 3) {
+        if (Jsoup.parse(text).text().trim().length() < 3) {
             errorsCommentDTO.setText("The comment text is not set or too short!");
             commentResponseDTO.setErrors(errorsCommentDTO);
             return ResponseEntity.badRequest().body(commentResponseDTO);
