@@ -236,7 +236,7 @@ public class ApiPostController {
             commentResponseDTO.setErrors(errorsCommentDTO);
             return ResponseEntity.badRequest().body(commentResponseDTO);
         }
-        if (text.length() < 3) {
+        if (text.trim().length() < 3) {
             errorsCommentDTO.setText("The comment text is not set or too short!");
             commentResponseDTO.setErrors(errorsCommentDTO);
             return ResponseEntity.badRequest().body(commentResponseDTO);

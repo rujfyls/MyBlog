@@ -1,0 +1,1 @@
+DELETE FROM tag2post  WHERE id = 4;

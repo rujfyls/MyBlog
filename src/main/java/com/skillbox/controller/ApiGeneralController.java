@@ -148,22 +148,23 @@ public class ApiGeneralController {
 
     @RequestMapping(path = "/image", method = POST, consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('user:write')")
-    public String uploadImage(@RequestPart("image") MultipartFile image) throws IOException {
+    public ResponseEntity<String> uploadImage(@RequestPart("image") MultipartFile image) throws IOException {
         if (image.isEmpty()) {
-            return new ResponseEntity<>(new ImageResponseDRO("Missing data"),
-                    HttpStatus.BAD_REQUEST).toString();
+            return new ResponseEntity<>(new ImageResponseDRO("Missing data").toString(),
+                    HttpStatus.BAD_REQUEST);
         }
         if (image.getSize() > 5_242_880) {
-            return new ResponseEntity<>(new ImageResponseDRO("The file size exceeds the allowed size"),
-                    HttpStatus.BAD_REQUEST).toString();
+            System.out.println(image.getSize());
+            return new ResponseEntity<>(new ImageResponseDRO("The file size exceeds the allowed size").toString(),
+                    HttpStatus.BAD_REQUEST);
         }
         if (!getImageFormat(image.getOriginalFilename()).equals("png") &&
                 !getImageFormat(image.getOriginalFilename()).equals("jpg")) {
-            return new ResponseEntity<>(new ImageResponseDRO("Invalid image format"),
-                    HttpStatus.BAD_REQUEST).toString();
+            return new ResponseEntity<>(new ImageResponseDRO("Invalid image format").toString(),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        return saveImage(image, null);
+        return ResponseEntity.ok(saveImage(image, null));
     }
 
     @RequestMapping(path = "/profile/my", method = POST, consumes = {"multipart/form-data"})
