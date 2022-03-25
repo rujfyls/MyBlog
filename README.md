@@ -42,29 +42,36 @@ __________________________________________________
 <br>
 <br>
 _Главный экран_
-![home-page](https://user-images.githubusercontent.com/86868993/160098990-4a62084c-2238-41af-baf8-0e150a424dd7.png)
+<br>
+![home-page](https://user-images.githubusercontent.com/86868993/160099599-5f4de7b5-7bef-42cc-9d60-df9254352abc.png)
 
 <br>
 <br>
 _Добавление нового поста_
-![new-post](https://user-images.githubusercontent.com/86868993/160099033-b9e81671-c426-49d6-bab8-0b76aad3d2e4.png)
+<br>
+![new-post](https://user-images.githubusercontent.com/86868993/160099663-0c2bd0ba-4053-4c0a-8505-b9f89d316216.png)
 
 <br>
 <br>
 _Написание комментария_
-![comment](https://user-images.githubusercontent.com/86868993/160099065-9b676f9b-057a-489f-89e6-de63d1c09b33.png)
+<br>
+![comment](https://user-images.githubusercontent.com/86868993/160099709-c250b9d5-8def-45e6-b6da-8008460c10f7.png)
 
 <br>
 <br>
 _Модерация поста_
-![post-moderation](https://user-images.githubusercontent.com/86868993/160099107-49215127-f11d-4d3d-8ad0-3fce7de64358.png)
+<br>
+![post-moderation](https://user-images.githubusercontent.com/86868993/160099757-17e89bb3-2ad1-4dfc-abca-84c02f5c6023.png)
 
 <br>
 <br>
 _Редактирование профиля_
-![edit-profile](https://user-images.githubusercontent.com/86868993/160099147-209c1b0e-028a-47d9-a44e-0e69a7807e5d.png)
+<br>
+![edit-profile](https://user-images.githubusercontent.com/86868993/160099806-b3d1bfe1-62c2-4c10-83e3-824eed599d99.png)
 
 <br>
 <br>
 _Диаграмма базы данных_
-![my-blog-dm-diagram](https://user-images.githubusercontent.com/86868993/160099184-2757a100-021e-4dc7-87a0-27a55676c565.png)
+<br>
+![my-blog-dm-diagram](https://user-images.githubusercontent.com/86868993/160099845-01c5c801-6c9e-49f4-8bd4-db5989b799b3.png)
+
