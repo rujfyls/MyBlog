@@ -42,24 +42,29 @@ __________________________________________________
 <br>
 <br>
 _Главный экран_
-![](C:\Users\rujfyls\Desktop\home-page.png)
+![home-page](https://user-images.githubusercontent.com/86868993/160098990-4a62084c-2238-41af-baf8-0e150a424dd7.png)
+
 <br>
 <br>
 _Добавление нового поста_
-![](C:\Users\rujfyls\Desktop\new-post.png)
+![new-post](https://user-images.githubusercontent.com/86868993/160099033-b9e81671-c426-49d6-bab8-0b76aad3d2e4.png)
+
 <br>
 <br>
 _Написание комментария_
-![](C:\Users\rujfyls\Desktop\comment.png)
+![comment](https://user-images.githubusercontent.com/86868993/160099065-9b676f9b-057a-489f-89e6-de63d1c09b33.png)
+
 <br>
 <br>
 _Модерация поста_
-![](C:\Users\rujfyls\Desktop\post-moderation.png)
+![post-moderation](https://user-images.githubusercontent.com/86868993/160099107-49215127-f11d-4d3d-8ad0-3fce7de64358.png)
+
 <br>
 <br>
 _Редактирование профиля_
-![](C:\Users\rujfyls\Desktop\edit-profile.png)
+![edit-profile](https://user-images.githubusercontent.com/86868993/160099147-209c1b0e-028a-47d9-a44e-0e69a7807e5d.png)
+
 <br>
 <br>
 _Диаграмма базы данных_
-![](C:\Users\rujfyls\Desktop\my-blog-dm-diagram.png)
+![my-blog-dm-diagram](https://user-images.githubusercontent.com/86868993/160099184-2757a100-021e-4dc7-87a0-27a55676c565.png)
