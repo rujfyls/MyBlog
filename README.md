@@ -44,7 +44,9 @@ __________________________________________________
 **Screenshots**
 <br>
 <br>
+
 _Главный экран_
+
 <br>
 
 ![home-page](https://user-images.githubusercontent.com/86868993/160099599-5f4de7b5-7bef-42cc-9d60-df9254352abc.png)
@@ -52,7 +54,9 @@ _Главный экран_
 
 <br>
 <br>
+
 _Добавление нового поста_
+
 <br>
 
 ![new-post](https://user-images.githubusercontent.com/86868993/160099663-0c2bd0ba-4053-4c0a-8505-b9f89d316216.png)
@@ -60,7 +64,9 @@ _Добавление нового поста_
 
 <br>
 <br>
+
 _Написание комментария_
+
 <br>
 
 ![comment](https://user-images.githubusercontent.com/86868993/160099709-c250b9d5-8def-45e6-b6da-8008460c10f7.png)
@@ -68,14 +74,18 @@ _Написание комментария_
 
 <br>
 <br>
+
 _Модерация поста_
+
 <br>
 
 ![post-moderation](https://user-images.githubusercontent.com/86868993/160099757-17e89bb3-2ad1-4dfc-abca-84c02f5c6023.png)
 
 <br>
 <br>
+
 _Редактирование профиля_
+
 <br>
 
 ![edit-profile](https://user-images.githubusercontent.com/86868993/160099806-b3d1bfe1-62c2-4c10-83e3-824eed599d99.png)
@@ -83,7 +93,9 @@ _Редактирование профиля_
 
 <br>
 <br>
+
 _Диаграмма базы данных_
+
 <br>
 
 
