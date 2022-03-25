@@ -1,12 +1,13 @@
 <h1>Blog</h1>
+
 __________________________________________________
 
 <h5>Данный проект представляет из себя Web-сервис для ведения собственного блога, или чтения интересующих Вас авторов.</h5>
 https://feduncov-blog.herokuapp.com/
-<br>
+
+
 __________________________________________________
-<br>
-**Возможноти, реализованные в этом проекте**
+**Возможности**
 <br><br>
  Если Вы **не** авторизованный пользователь
  - Чтение постов
@@ -45,35 +46,48 @@ __________________________________________________
 <br>
 _Главный экран_
 <br>
+
 ![home-page](https://user-images.githubusercontent.com/86868993/160099599-5f4de7b5-7bef-42cc-9d60-df9254352abc.png)
+
 
 <br>
 <br>
 _Добавление нового поста_
 <br>
+
 ![new-post](https://user-images.githubusercontent.com/86868993/160099663-0c2bd0ba-4053-4c0a-8505-b9f89d316216.png)
+
 
 <br>
 <br>
 _Написание комментария_
 <br>
+
 ![comment](https://user-images.githubusercontent.com/86868993/160099709-c250b9d5-8def-45e6-b6da-8008460c10f7.png)
+
 
 <br>
 <br>
 _Модерация поста_
 <br>
+
 ![post-moderation](https://user-images.githubusercontent.com/86868993/160099757-17e89bb3-2ad1-4dfc-abca-84c02f5c6023.png)
 
 <br>
 <br>
 _Редактирование профиля_
 <br>
+
 ![edit-profile](https://user-images.githubusercontent.com/86868993/160099806-b3d1bfe1-62c2-4c10-83e3-824eed599d99.png)
+
 
 <br>
 <br>
 _Диаграмма базы данных_
 <br>
+
+
 ![my-blog-dm-diagram](https://user-images.githubusercontent.com/86868993/160099845-01c5c801-6c9e-49f4-8bd4-db5989b799b3.png)
+
+
 
